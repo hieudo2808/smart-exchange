@@ -1,4 +1,3 @@
-// src/common/interceptors/response.interceptor.ts
 import {
     CallHandler,
     ExecutionContext,
@@ -15,7 +14,7 @@ export class ResponseInterceptor implements NestInterceptor {
 
         return next.handle().pipe(
             map((data) => ({
-                code: 1,
+                code: 200,
                 data,
                 path: request.url,
                 timestamp: new Date().toISOString(),

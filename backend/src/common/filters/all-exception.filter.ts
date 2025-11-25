@@ -1,4 +1,3 @@
-// src/common/filters/all-exception.filter.ts
 import {
     ExceptionFilter,
     Catch,
@@ -8,27 +7,31 @@ import {
 } from "@nestjs/common";
 
 @Catch()
-export class AllExceptionsFilter implements ExceptionFilter {
-    catch(exception: unknown, host: ArgumentsHost) {
+export class HttpExceptionFilter implements ExceptionFilter {
+    catch(exception: any, host: ArgumentsHost) {
         const ctx = host.switchToHttp();
         const response = ctx.getResponse();
         const request = ctx.getRequest();
 
-        const status =
-            exception instanceof HttpException
-                ? exception.getStatus()
-                : HttpStatus.INTERNAL_SERVER_ERROR;
+        const isHttpException = exception instanceof HttpException;
+        const status = isHttpException
+            ? exception.getStatus()
+            : HttpStatus.INTERNAL_SERVER_ERROR;
 
-        const message =
-            exception instanceof HttpException
-                ? exception.getResponse()
-                : "Internal server error";
+        const exceptionResponse = isHttpException
+            ? (exception.getResponse() as any)
+            : null;
+
+        const code = exceptionResponse?.code ?? 1000;
+        const data = exceptionResponse?.data ?? {
+            message: exception.message || "Internal server error",
+        };
 
         response.status(status).json({
-            status: "error",
-            message,
-            path: request.url,
+            code,
+            data,
             timestamp: new Date().toISOString(),
+            path: request.url,
         });
     }
 }
