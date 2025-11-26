@@ -22,7 +22,7 @@ const LoginPage: React.FC<Props> = ({ lang, setLang }) => {
   const isJP = lang === "jp";
 
   const title = isJP ? "ログイン" : "Đăng nhập";
-  const emailLabel = isJP ? "電子メール" : "Email";
+  const emailLabel = isJP ? "メールアドレス" : "Email";
   const emailPlaceholder = isJP
     ? "メールアドレスを入力してください"
     : "Nhập địa chỉ email";
