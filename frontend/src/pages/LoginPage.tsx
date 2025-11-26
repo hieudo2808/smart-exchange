@@ -32,8 +32,9 @@ const LoginPage: React.FC<Props> = ({ lang, setLang }) => {
       setLoading(true);
       // TODO: gọi API login thật
       console.log("Login with:", { email, password });
-    } catch (err: any) {
-      setError(err?.message || t("auth.login.errorLoginFailed"));
+    } catch (err) {
+      const error = err as Error;
+      setError(error?.message || t("auth.login.errorLoginFailed"));
     } finally {
       setLoading(false);
     }
