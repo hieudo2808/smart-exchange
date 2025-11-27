@@ -1,44 +1,43 @@
 {
-  "auth": {
-    "login": {
-      "title": "Đăng nhập",
-      "emailLabel": "Email",
-      "emailPlaceholder": "Nhập địa chỉ email",
-      "passwordLabel": "Mật khẩu",
-      "passwordPlaceholder": "Nhập mật khẩu",
-      "submit": "Đăng nhập",
-      "google": "Đăng nhập bằng Google",
-      "noAccount": "Chưa có tài khoản?",
-      "register": "Đăng ký",
-      "loginProcessing": "Đang đăng nhập...",
-      "errorMissing": "Vui lòng nhập email và mật khẩu.",
-      "errorLoginFailed": "Đăng nhập thất bại."
+    "auth": {
+        "login": {
+            "title": "Đăng nhập",
+            "emailLabel": "Email",
+            "emailPlaceholder": "Nhập địa chỉ email",
+            "passwordLabel": "Mật khẩu",
+            "passwordPlaceholder": "Nhập mật khẩu",
+            "submit": "Đăng nhập",
+            "google": "Đăng nhập bằng Google",
+            "noAccount": "Chưa có tài khoản?",
+            "register": "Đăng ký",
+            "loginProcessing": "Đang đăng nhập...",
+            "errorMissing": "Vui lòng nhập email và mật khẩu.",
+            "errorLoginFailed": "Đăng nhập thất bại."
+        },
+        "register": {
+            "title": "Đăng ký",
+            "fullNameLabel": "Họ và tên",
+            "fullNamePlaceholder": "Nhập họ và tên",
+            "emailLabel": "Email",
+            "emailPlaceholder": "Nhập địa chỉ email",
+            "passwordLabel": "Mật khẩu",
+            "passwordPlaceholder": "Nhập mật khẩu",
+            "passwordConfirmLabel": "Xác nhận mật khẩu",
+            "passwordConfirmPlaceholder": "Nhập lại mật khẩu",
+            "submit": "Đăng ký",
+            "google": "Đăng ký bằng Google",
+            "bottomText": "Đã có tài khoản?",
+            "bottomLinkText": "Đăng nhập",
+            "registerProcessing": "Đang đăng ký...",
+            "errorMissing": "Vui lòng điền đầy đủ thông tin.",
+            "errorPasswordMismatch": "Mật khẩu và xác nhận mật khẩu không trùng nhau.",
+            "errorRegisterFailed": "Đăng ký thất bại.",
+            "errorGeneric": "Có lỗi xảy ra, vui lòng thử lại."
+        },
+        "googleAlt": "Đăng nhập bằng tài khoản Google"
     },
-    "register": {
-      "title": "Đăng ký",
-      "fullNameLabel": "Họ và tên",
-      "fullNamePlaceholder": "Nhập họ và tên",
-      "emailLabel": "Email",
-      "emailPlaceholder": "Nhập địa chỉ email",
-      "passwordLabel": "Mật khẩu",
-      "passwordPlaceholder": "Nhập mật khẩu",
-      "passwordConfirmLabel": "Xác nhận mật khẩu",
-      "passwordConfirmPlaceholder": "Nhập lại mật khẩu",
-      "submit": "Đăng ký",
-      "google": "Đăng ký bằng Google",
-      "bottomText": "Đã có tài khoản?",
-      "bottomLinkText": "Đăng nhập",
-      "registerProcessing": "Đang đăng ký...",
-      "errorMissing": "Vui lòng điền đầy đủ thông tin.",
-      "errorPasswordMismatch": "Mật khẩu và xác nhận mật khẩu không trùng nhau.",
-      "errorRegisterFailed": "Đăng ký thất bại.",
-      "errorGeneric": "Có lỗi xảy ra, vui lòng thử lại."
-    },
-    "googleAlt": "Đăng nhập bằng tài khoản Google"
-  },
-  "lang": {
-    "ariaVi": "Chuyển sang tiếng Việt",
-    "ariaJp": "Chuyển sang tiếng Nhật"
-  }
+    "lang": {
+        "ariaVi": "Chuyển sang tiếng Việt",
+        "ariaJp": "Chuyển sang tiếng Nhật"
+    }
 }
-

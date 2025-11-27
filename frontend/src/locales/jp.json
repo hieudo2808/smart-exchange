@@ -1,43 +1,43 @@
 {
-  "auth": {
-    "login": {
-      "title": "ログイン",
-      "emailLabel": "メールアドレス",
-      "emailPlaceholder": "メールアドレスを入力してください",
-      "passwordLabel": "パスワード",
-      "passwordPlaceholder": "パスワードを入力してください",
-      "submit": "ログイン",
-      "google": "Googleでログイン",
-      "noAccount": "アカウントをお持ちでない場合？",
-      "register": "新規登録",
-      "loginProcessing": "処理中...",
-      "errorMissing": "メールとパスワードを入力してください。",
-      "errorLoginFailed": "ログインに失敗しました。"
+    "auth": {
+        "login": {
+            "title": "ログイン",
+            "emailLabel": "メールアドレス",
+            "emailPlaceholder": "メールアドレスを入力してください",
+            "passwordLabel": "パスワード",
+            "passwordPlaceholder": "パスワードを入力してください",
+            "submit": "ログイン",
+            "google": "Googleでログイン",
+            "noAccount": "アカウントをお持ちでない場合？",
+            "register": "新規登録",
+            "loginProcessing": "処理中...",
+            "errorMissing": "メールとパスワードを入力してください。",
+            "errorLoginFailed": "ログインに失敗しました。"
+        },
+        "register": {
+            "title": "登録",
+            "fullNameLabel": "氏名",
+            "fullNamePlaceholder": "お名前を入力してください",
+            "emailLabel": "メールアドレス",
+            "emailPlaceholder": "メールアドレスを入力してください",
+            "passwordLabel": "パスワード",
+            "passwordPlaceholder": "パスワードを入力してください",
+            "passwordConfirmLabel": "パスワード確認",
+            "passwordConfirmPlaceholder": "もう一度パスワードを入力してください",
+            "submit": "登録",
+            "google": "Googleで登録",
+            "bottomText": "すでにアカウントをお持ちですか？",
+            "bottomLinkText": "ログイン",
+            "registerProcessing": "処理中...",
+            "errorMissing": "すべての項目を入力してください。",
+            "errorPasswordMismatch": "パスワードと確認用パスワードが一致しません。",
+            "errorRegisterFailed": "登録に失敗しました。",
+            "errorGeneric": "エラーが発生しました。もう一度お試しください。"
+        },
+        "googleAlt": "Googleアカウントでログイン"
     },
-    "register": {
-      "title": "登録",
-      "fullNameLabel": "氏名",
-      "fullNamePlaceholder": "お名前を入力してください",
-      "emailLabel": "メールアドレス",
-      "emailPlaceholder": "メールアドレスを入力してください",
-      "passwordLabel": "パスワード",
-      "passwordPlaceholder": "パスワードを入力してください",
-      "passwordConfirmLabel": "パスワード確認",
-      "passwordConfirmPlaceholder": "もう一度パスワードを入力してください",
-      "submit": "登録",
-      "google": "Googleで登録",
-      "bottomText": "すでにアカウントをお持ちですか？",
-      "bottomLinkText": "ログイン",
-      "registerProcessing": "処理中...",
-      "errorMissing": "すべての項目を入力してください。",
-      "errorPasswordMismatch": "パスワードと確認用パスワードが一致しません。",
-      "errorRegisterFailed": "登録に失敗しました。",
-      "errorGeneric": "エラーが発生しました。もう一度お試しください。"
-    },
-    "googleAlt": "Googleアカウントでログイン"
-  },
-  "lang": {
-    "ariaVi": "ベトナム語に切り替える",
-    "ariaJp": "日本語に切り替える"
-  }
+    "lang": {
+        "ariaVi": "ベトナム語に切り替える",
+        "ariaJp": "日本語に切り替える"
+    }
 }

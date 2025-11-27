@@ -1,110 +1,107 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import * as bcrypt from 'bcrypt';
-import { Repository } from 'typeorm';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './entities/user.entity';
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "../prisma/prisma.service";
+import { BcryptSecurity } from "../common/security/bcrypt.security";
+import { AppException } from "../common/exceptions/app.exception";
+import { ExceptionCode } from "../common/constants/exception-code.constant";
+import { CreateUserDto } from "./dto/create-user.dto";
+import { UpdateUserDto } from "./dto/update-user.dto";
 
 @Injectable()
 export class UsersService {
-  private static instance: UsersService;
+    constructor(private readonly prisma: PrismaService) {}
 
-  constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-  ) {
-    if (!UsersService.instance) {
-      UsersService.instance = this;
-    }
-    return UsersService.instance;
-  }
+    async create(createUserDto: CreateUserDto) {
+        const existing = await this.prisma.user.findUnique({
+            where: { email: createUserDto.email },
+        });
+        if (existing) {
+            throw new AppException(ExceptionCode.CONFLICT, "Email already in use");
+        }
 
-  async create(createUserDto: CreateUserDto) {
-    const existing = await this.userRepository.findOne({ where: { email: createUserDto.email } });
-    if (existing) {
-      throw new ConflictException({ statusCode: 409, message: 'Email already in use', error: 'Conflict' });
-    }
+        const hashedPassword = await BcryptSecurity.hashPassword(createUserDto.password);
 
-    const pepper = process.env.PEPPER ?? '';
-    const password = await bcrypt.hash(createUserDto.password + pepper, 10);
+        const user = await this.prisma.user.create({
+            data: {
+                email: createUserDto.email,
+                password: hashedPassword,
+                fullName: createUserDto.email.split("@")[0],
+                jobTitle: createUserDto.job_title,
+                languageCode: createUserDto.language || "vi",
+                themeMode: createUserDto.theme_mode || "light",
+            },
+        });
 
-    const user = this.userRepository.create({
-      email: createUserDto.email,
-      password,
-      job_title: createUserDto.job_title,
-      language: createUserDto.language,
-      theme_mode: createUserDto.theme_mode,
-    });
-
-    await this.userRepository.save(user);
-    return { message: 'User created', data: this.serialize(user) };
-  }
-
-  async findAll() {
-    const users = await this.userRepository.find();
-    return { message: 'Users fetched', data: users.map((user) => this.serialize(user)) };
-  }
-
-  async findOne(user_id: number) {
-    const user = await this.userRepository.findOne({ where: { user_id } });
-    if (!user) {
-      throw new NotFoundException({ statusCode: 404, message: 'User not found', error: 'Not Found' });
-    }
-    return { message: 'User fetched', data: this.serialize(user) };
-  }
-
-  async findByEmail(email: string) {
-    return this.userRepository.findOne({ where: { email } });
-  }
-
-  async update(user_id: number, updateUserDto: UpdateUserDto) {
-    const user = await this.userRepository.findOne({ where: { user_id } });
-    if (!user) {
-      throw new NotFoundException({ statusCode: 404, message: 'User not found', error: 'Not Found' });
+        return { message: "User created", data: this.serialize(user) };
     }
 
-    if (updateUserDto.email && updateUserDto.email !== user.email) {
-      const duplicate = await this.userRepository.findOne({ where: { email: updateUserDto.email } });
-      if (duplicate) {
-        throw new ConflictException({ statusCode: 409, message: 'Email already in use', error: 'Conflict' });
-      }
-      user.email = updateUserDto.email;
+    async findAll() {
+        const users = await this.prisma.user.findMany();
+        return {
+            message: "Users fetched",
+            data: users.map((user) => this.serialize(user)),
+        };
     }
 
-    if (updateUserDto.password) {
-      const pepper = process.env.PEPPER ?? '';
-      user.password = await bcrypt.hash(updateUserDto.password + pepper, 10);
+    async findOne(user_id: string) {
+        const user = await this.prisma.user.findUnique({
+            where: { userId: user_id },
+        });
+        if (!user) {
+            throw new AppException(ExceptionCode.NOT_FOUND, "User not found");
+        }
+        return { message: "User fetched", data: this.serialize(user) };
     }
 
-    if (updateUserDto.job_title !== undefined) {
-      user.job_title = updateUserDto.job_title;
+    async findByEmail(email: string) {
+        return this.prisma.user.findUnique({ where: { email } });
     }
 
-    if (updateUserDto.language !== undefined) {
-      user.language = updateUserDto.language;
+    async update(user_id: string, updateUserDto: UpdateUserDto) {
+        const user = await this.prisma.user.findUnique({
+            where: { userId: user_id },
+        });
+        if (!user) {
+            throw new AppException(ExceptionCode.NOT_FOUND, "User not found");
+        }
+
+        if (updateUserDto.email && updateUserDto.email !== user.email) {
+            const duplicate = await this.prisma.user.findUnique({
+                where: { email: updateUserDto.email },
+            });
+            if (duplicate) {
+                throw new AppException(ExceptionCode.CONFLICT, "Email already in use");
+            }
+        }
+
+        const data: any = {};
+        if (updateUserDto.email) data.email = updateUserDto.email;
+        if (updateUserDto.password)
+            data.password = await BcryptSecurity.hashPassword(updateUserDto.password);
+        if (updateUserDto.job_title !== undefined) data.jobTitle = updateUserDto.job_title;
+        if (updateUserDto.language !== undefined) data.languageCode = updateUserDto.language;
+        if (updateUserDto.theme_mode !== undefined) data.themeMode = updateUserDto.theme_mode;
+
+        const updatedUser = await this.prisma.user.update({
+            where: { userId: user_id },
+            data,
+        });
+
+        return { message: "User updated", data: this.serialize(updatedUser) };
     }
 
-    if (updateUserDto.theme_mode !== undefined) {
-      user.theme_mode = updateUserDto.theme_mode;
+    async remove(user_id: string) {
+        const user = await this.prisma.user.findUnique({
+            where: { userId: user_id },
+        });
+        if (!user) {
+            throw new AppException(ExceptionCode.NOT_FOUND, "User not found");
+        }
+        await this.prisma.user.delete({ where: { userId: user_id } });
+        return { message: "User deleted", data: { user_id } };
     }
 
-    await this.userRepository.save(user);
-    return { message: 'User updated', data: this.serialize(user) };
-  }
-
-  async remove(user_id: number) {
-    const user = await this.userRepository.findOne({ where: { user_id } });
-    if (!user) {
-      throw new NotFoundException({ statusCode: 404, message: 'User not found', error: 'Not Found' });
+    private serialize(user: any) {
+        const { password, ...rest } = user;
+        return rest;
     }
-    await this.userRepository.remove(user);
-    return { message: 'User deleted', data: { user_id } };
-  }
-
-  private serialize(user: User) {
-    const { password, ...rest } = user;
-    return rest;
-  }
 }
-

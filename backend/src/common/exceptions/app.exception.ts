@@ -1,19 +1,13 @@
-import { HttpException, HttpStatus } from "@nestjs/common";
-import { ExceptionCode } from "../constants/exception-code.constant";
+import { HttpException } from "@nestjs/common";
 
 export class AppException extends HttpException {
-    constructor(
-        codeKey: keyof typeof ExceptionCode,
-        status?: HttpStatus,
-        customMsg?: string
-    ) {
-        const { code, msg } = ExceptionCode[codeKey];
+    constructor(exception: { code: number; msg: string; status: number }, customMsg?: string) {
         super(
             {
-                code,
-                data: { message: customMsg || msg },
+                code: exception.code,
+                data: { message: customMsg || exception.msg },
             },
-            status || HttpStatus.BAD_REQUEST
+            exception.status
         );
     }
 }

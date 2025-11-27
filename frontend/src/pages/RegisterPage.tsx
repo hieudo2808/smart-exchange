@@ -7,138 +7,135 @@ import PrimaryButton from "../components/PrimaryButton";
 import type { Lang } from "../App";
 import googleLogo from "../assets/google-logo.png";
 
-
 interface Props {
-  lang: Lang;
-  setLang: (lang: Lang) => void;
+    lang: Lang;
+    setLang: (lang: Lang) => void;
 }
 
 const RegisterPage: React.FC<Props> = ({ lang, setLang }) => {
-  const { t } = useTranslation();
-  const navigate = useNavigate();
+    const { t } = useTranslation();
+    const navigate = useNavigate();
 
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordConfirm, setPasswordConfirm] = useState("");
+    const [fullName, setFullName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [passwordConfirm, setPasswordConfirm] = useState("");
 
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError(null);
 
-    if (!fullName || !email || !password || !passwordConfirm) {
-      setError(t("auth.register.errorMissing"));
-      return;
-    }
+        if (!fullName || !email || !password || !passwordConfirm) {
+            setError(t("auth.register.errorMissing"));
+            return;
+        }
 
-    if (password !== passwordConfirm) {
-      setError(t("auth.register.errorPasswordMismatch"));
-      return;
-    }
+        if (password !== passwordConfirm) {
+            setError(t("auth.register.errorPasswordMismatch"));
+            return;
+        }
 
-    try {
-      setLoading(true);
-      // TODO: gọi API đăng ký thật
-      const res = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          fullName,
-          email,
-          password
-        })
-      });
+        try {
+            setLoading(true);
+            // TODO: gọi API đăng ký thật
+            const res = await fetch("/api/auth/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    fullName,
+                    email,
+                    password,
+                }),
+            });
 
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(
-          data.message || t("auth.register.errorRegisterFailed")
-        );
-      }
+            if (!res.ok) {
+                const data = await res.json().catch(() => ({}));
+                throw new Error(
+                    data.message || t("auth.register.errorRegisterFailed")
+                );
+            }
 
-      navigate("/login");
-    } catch (err: any) {
-      setError(
-        err?.message || t("auth.register.errorGeneric")
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+            navigate("/login");
+        } catch (err: any) {
+            setError(err?.message || t("auth.register.errorGeneric"));
+        } finally {
+            setLoading(false);
+        }
+    };
 
-  const handleGoogleRegister = () => {
-    // TODO: sửa cho đúng BE
-    window.location.href = "/api/auth/google";
-  };
+    const handleGoogleRegister = () => {
+        // TODO: sửa cho đúng BE
+        window.location.href = "/api/auth/google";
+    };
 
-  return (
-    <AuthLayout
-      title={t("auth.register.title")}
-      lang={lang}
-      onChangeLang={setLang}
-    >
-      {error && <div className="auth-error">{error}</div>}
+    return (
+        <AuthLayout
+            title={t("auth.register.title")}
+            lang={lang}
+            onChangeLang={setLang}
+        >
+            {error && <div className="auth-error">{error}</div>}
 
-      <form onSubmit={handleSubmit} className="auth-form">
-        <TextInput
-          label={t("auth.register.fullNameLabel")}
-          type="text"
-          placeholder={t("auth.register.fullNamePlaceholder")}
-          value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
-        />
+            <form onSubmit={handleSubmit} className="auth-form">
+                <TextInput
+                    label={t("auth.register.fullNameLabel")}
+                    type="text"
+                    placeholder={t("auth.register.fullNamePlaceholder")}
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                />
 
-        <TextInput
-          label={t("auth.register.emailLabel")}
-          type="email"
-          placeholder={t("auth.register.emailPlaceholder")}
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+                <TextInput
+                    label={t("auth.register.emailLabel")}
+                    type="email"
+                    placeholder={t("auth.register.emailPlaceholder")}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                />
 
-        <TextInput
-          label={t("auth.register.passwordLabel")}
-          type="password"
-          placeholder={t("auth.register.passwordPlaceholder")}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+                <TextInput
+                    label={t("auth.register.passwordLabel")}
+                    type="password"
+                    placeholder={t("auth.register.passwordPlaceholder")}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                />
 
-        <TextInput
-          label={t("auth.register.passwordConfirmLabel")}
-          type="password"
-          placeholder={t("auth.register.passwordConfirmPlaceholder")}
-          value={passwordConfirm}
-          onChange={(e) => setPasswordConfirm(e.target.value)}
-        />
+                <TextInput
+                    label={t("auth.register.passwordConfirmLabel")}
+                    type="password"
+                    placeholder={t("auth.register.passwordConfirmPlaceholder")}
+                    value={passwordConfirm}
+                    onChange={(e) => setPasswordConfirm(e.target.value)}
+                />
 
-        <PrimaryButton type="submit" disabled={loading}>
-          {loading
-            ? t("auth.register.registerProcessing")
-            : t("auth.register.submit")}
-        </PrimaryButton>
-      </form>
+                <PrimaryButton type="submit" disabled={loading}>
+                    {loading
+                        ? t("auth.register.registerProcessing")
+                        : t("auth.register.submit")}
+                </PrimaryButton>
+            </form>
 
-      <button className="google-btn" onClick={handleGoogleRegister}>
-        <img
-          src={googleLogo}
-          alt={t("auth.googleAlt")}
-          className="google-icon"
-        />
-        <span>{t("auth.register.google")}</span>
-      </button>
+            <button className="google-btn" onClick={handleGoogleRegister}>
+                <img
+                    src={googleLogo}
+                    alt={t("auth.googleAlt")}
+                    className="google-icon"
+                />
+                <span>{t("auth.register.google")}</span>
+            </button>
 
-      <div className="auth-bottom-text">
-        {t("auth.register.bottomText")}{" "}
-        <Link to="/login" className="link">
-          {t("auth.register.bottomLinkText")}
-        </Link>
-      </div>
-    </AuthLayout>
-  );
+            <div className="auth-bottom-text">
+                {t("auth.register.bottomText")}{" "}
+                <Link to="/login" className="link">
+                    {t("auth.register.bottomLinkText")}
+                </Link>
+            </div>
+        </AuthLayout>
+    );
 };
 
 export default RegisterPage;
