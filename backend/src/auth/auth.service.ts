@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { UsersService } from "../users/users.service";
-import { BcryptSecurity } from "../common/security/bcrypt.security";
-import { AppException } from "../common/exceptions/app.exception";
-import { ExceptionCode } from "../common/constants/exception-code.constant";
+import { BcryptSecurity } from "~/common/security/bcrypt.security";
+import { AppException } from "~/common/exceptions/app.exception";
+import { ExceptionCode } from "~/common/constants/exception-code.constant";
 import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "./dto/login.dto";
 

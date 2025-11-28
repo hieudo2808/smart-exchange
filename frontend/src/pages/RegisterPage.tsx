@@ -5,15 +5,9 @@ import AuthLayout from "../layouts/AuthLayout";
 import TextInput from "../components/TextInput";
 import PrimaryButton from "../components/PrimaryButton";
 import { authService } from "../services/api";
-import type { Lang } from "../App";
 import googleLogo from "../assets/google-logo.png";
 
-interface Props {
-    lang: Lang;
-    setLang: (lang: Lang) => void;
-}
-
-const RegisterPage: React.FC<Props> = ({ lang, setLang }) => {
+const RegisterPage: React.FC = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
 
@@ -61,7 +55,7 @@ const RegisterPage: React.FC<Props> = ({ lang, setLang }) => {
     };
 
     return (
-        <AuthLayout title={t("auth.register.title")} lang={lang} onChangeLang={setLang}>
+        <AuthLayout title={t("auth.register.title")}>
             {error && <div className="auth-error">{error}</div>}
 
             <form onSubmit={handleSubmit} className="auth-form">

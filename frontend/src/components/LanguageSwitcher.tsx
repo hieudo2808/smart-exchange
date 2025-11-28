@@ -1,20 +1,17 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import type { Lang } from "../App";
+import { useLanguage } from "../contexts/LanguageContext";
 
-interface Props {
-    lang: Lang;
-    onChangeLang: (lang: Lang) => void;
-}
-
-const LanguageSwitcher: React.FC<Props> = ({ lang, onChangeLang }) => {
+const LanguageSwitcher: React.FC = () => {
     const { t } = useTranslation();
+    const { lang, setLang } = useLanguage();
+
     return (
         <div className="lang-switch">
             <button
                 type="button"
                 className={`lang-btn ${lang === "vi" ? "active" : ""}`}
-                onClick={() => onChangeLang("vi")}
+                onClick={() => setLang("vi")}
                 aria-label={t("lang.ariaVi")}
             >
                 VI
@@ -22,7 +19,7 @@ const LanguageSwitcher: React.FC<Props> = ({ lang, onChangeLang }) => {
             <button
                 type="button"
                 className={`lang-btn ${lang === "jp" ? "active" : ""}`}
-                onClick={() => onChangeLang("jp")}
+                onClick={() => setLang("jp")}
                 aria-label={t("lang.ariaJp")}
             >
                 JP

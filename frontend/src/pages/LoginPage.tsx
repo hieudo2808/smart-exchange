@@ -4,16 +4,10 @@ import { useTranslation } from "react-i18next";
 import AuthLayout from "../layouts/AuthLayout";
 import TextInput from "../components/TextInput";
 import PrimaryButton from "../components/PrimaryButton";
-import { authService } from "../services/api";
-import type { Lang } from "../App";
+import { authService } from "~/services/api";
 import googleLogo from "../assets/google-logo.png";
 
-interface Props {
-    lang: Lang;
-    setLang: (lang: Lang) => void;
-}
-
-const LoginPage: React.FC<Props> = ({ lang, setLang }) => {
+const LoginPage: React.FC = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const [email, setEmail] = useState("");
@@ -55,7 +49,7 @@ const LoginPage: React.FC<Props> = ({ lang, setLang }) => {
     };
 
     return (
-        <AuthLayout title={t("auth.login.title")} lang={lang} onChangeLang={setLang}>
+        <AuthLayout title={t("auth.login.title")}>
             {error && <div className="auth-error">{error}</div>}
 
             <form onSubmit={handleSubmit} className="auth-form">

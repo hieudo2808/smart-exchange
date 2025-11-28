@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { authService } from "../services/api";
+import { authService } from "~/services/api";
 
 const HomePage: React.FC = () => {
     const navigate = useNavigate();
