@@ -36,6 +36,20 @@
         },
         "googleAlt": "Đăng nhập bằng tài khoản Google"
     },
+    "profile": {
+        "title": "Hồ sơ cá nhân",
+        "emailLabel": "Địa chỉ Email",
+        "careerLabel": "Sự nghiệp của tôi",
+        "careerPlaceholder": "Vui lòng nhập thông tin về sự nghiệp...",
+        "positionLabel": "Vị trí của tôi",
+        "positionPlaceholder": "Vui lòng nhập thông tin về vị trí...",
+        "updateButton": "Cập nhật",
+        "updating": "Đang cập nhật...",
+        "settingsBackButton": "Quay lại cài đặt",
+        "successMessage": "Cập nhật hồ sơ thành công!",
+        "errorNotAuthenticated": "Bạn chưa đăng nhập.",
+        "errorUpdateFailed": "Cập nhật hồ sơ thất bại."
+    },
     "lang": {
         "ariaVi": "Chuyển sang tiếng Việt",
         "ariaJp": "Chuyển sang tiếng Nhật"

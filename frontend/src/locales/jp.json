@@ -36,6 +36,20 @@
         },
         "googleAlt": "Googleアカウントでログイン"
     },
+    "profile": {
+        "title": "プロフィール",
+        "emailLabel": "電子メール",
+        "careerLabel": "自分のキャリア",
+        "careerPlaceholder": "キャリア情報を入力してください...",
+        "positionLabel": "自分の立場",
+        "positionPlaceholder": "職位情報を入力してください...",
+        "updateButton": "アップデート",
+        "updating": "アップデート中...",
+        "settingsBackButton": "設定画面に戻る",
+        "successMessage": "プロフィールの更新に成功しました！",
+        "errorNotAuthenticated": "ログインしていません。",
+        "errorUpdateFailed": "プロフィールの更新に失敗しました。"
+    },
     "lang": {
         "ariaVi": "ベトナム語に切り替える",
         "ariaJp": "日本語に切り替える"

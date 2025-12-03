@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import HomePage from "./pages/HomePage";
+import ProfilePage from "./pages/ProfilePage";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ProtectedLayout } from "./layouts/ProtectedLayout";
@@ -22,6 +23,7 @@ function App() {
                         {/* Protected Routes */}
                         <Route element={<ProtectedLayout />}>
                             <Route path="/" element={<HomePage />} />
+                            <Route path="/profile" element={<ProfilePage />} />
                         </Route>
                     </Routes>
                 </LanguageProvider>

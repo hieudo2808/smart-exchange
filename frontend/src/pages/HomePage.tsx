@@ -1,8 +1,10 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
 const HomePage: React.FC = () => {
     const { user, logout } = useAuth();
+    const navigate = useNavigate();
     const [loading, setLoading] = React.useState(false);
 
     console.log("HomePage - user:", user);
@@ -11,6 +13,10 @@ const HomePage: React.FC = () => {
         setLoading(true);
         await logout();
         setLoading(false);
+    };
+
+    const handleGoToProfile = () => {
+        navigate("/profile");
     };
 
     const settings = localStorage.getItem("settings")
@@ -37,21 +43,35 @@ const HomePage: React.FC = () => {
                     <strong>Theme:</strong> {settings?.theme || "N/A"}
                 </p>
             </div>
-            <button
-                onClick={handleLogout}
-                disabled={loading}
-                style={{
-                    marginTop: "1rem",
-                    padding: "0.5rem 1rem",
-                    cursor: "pointer",
-                    backgroundColor: "#dc3545",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "4px",
-                }}
-            >
-                {loading ? "Logging out..." : "Logout"}
-            </button>
+            <div style={{ marginTop: "1rem", display: "flex", gap: "1rem" }}>
+                <button
+                    onClick={handleGoToProfile}
+                    style={{
+                        padding: "0.5rem 1rem",
+                        cursor: "pointer",
+                        backgroundColor: "#667eea",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "4px",
+                    }}
+                >
+                    Go to Profile
+                </button>
+                <button
+                    onClick={handleLogout}
+                    disabled={loading}
+                    style={{
+                        padding: "0.5rem 1rem",
+                        cursor: "pointer",
+                        backgroundColor: "#dc3545",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "4px",
+                    }}
+                >
+                    {loading ? "Logging out..." : "Logout"}
+                </button>
+            </div>
         </div>
     );
 };
