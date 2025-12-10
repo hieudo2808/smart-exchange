@@ -5,6 +5,7 @@ import { AppException } from "../common/exceptions/app.exception";
 import { ExceptionCode } from "../common/constants/exception-code.constant";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
+import * as crypto from "crypto";
 
 @Injectable()
 export class UsersService {
@@ -95,6 +96,34 @@ export class UsersService {
         }
         await this.prisma.user.delete({ where: { userId: user_id } });
         return { user_id };
+    }
+
+    async upsertGoogleUser(payload: { email: string; fullName: string }) {
+        const existingUser = await this.prisma.user.findUnique({
+            where: { email: payload.email },
+        });
+
+        if (existingUser) {
+            return this.prisma.user.update({
+                where: { userId: existingUser.userId },
+                data: {
+                    fullName: payload.fullName,
+                },
+            });
+        }
+
+        const randomPassword = crypto.randomBytes(16).toString("hex");
+        const hashedPassword = await BcryptSecurity.hashPassword(randomPassword);
+
+        return this.prisma.user.create({
+            data: {
+                email: payload.email,
+                password: hashedPassword,
+                fullName: payload.fullName,
+                languageCode: "ja",
+                themeMode: "light",
+            },
+        });
     }
 
     private serialize(user: any) {
