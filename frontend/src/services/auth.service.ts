@@ -15,8 +15,7 @@ export interface LoginRequest {
 
 // Response types
 export interface UserInfo {
-    id?: string;
-    userId?: string;
+    id: string;
     email: string;
     jobTitle: string | null;
     languageCode?: string;

@@ -52,7 +52,7 @@ const LoginPage: React.FC = () => {
         onSuccess: async (tokenResponse) => {
             try {
                 setLoading(true);
-                
+
                 // Gọi backend với access token
                 const result = await authService.loginWithGoogle({
                     token: tokenResponse.access_token,
@@ -74,7 +74,7 @@ const LoginPage: React.FC = () => {
         onError: () => {
             setError(t("auth.login.googleError"));
         },
-        flow: 'implicit', // Dùng implicit flow thay vì popup để tránh COOP warning
+        flow: "implicit", // Dùng implicit flow thay vì popup để tránh COOP warning
     });
 
     return (

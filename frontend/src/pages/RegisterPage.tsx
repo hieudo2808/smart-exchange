@@ -57,7 +57,7 @@ const RegisterPage: React.FC = () => {
         onSuccess: async (tokenResponse) => {
             try {
                 setLoading(true);
-                
+
                 // Gọi backend với access token
                 const result = await authService.loginWithGoogle({
                     token: tokenResponse.access_token,
@@ -79,7 +79,7 @@ const RegisterPage: React.FC = () => {
         onError: () => {
             setError(t("auth.login.googleError"));
         },
-        flow: 'implicit',
+        flow: "implicit",
     });
 
     return (

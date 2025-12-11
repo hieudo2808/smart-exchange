@@ -1,21 +1,32 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { Link } from "react-router-dom";
 
 const HomePage: React.FC = () => {
     const { user, settings, logout } = useAuth();
     const navigate = useNavigate();
     const [loading, setLoading] = React.useState(false);
 
+    // Style nút đồng nhất
+    const buttonStyle: React.CSSProperties = {
+        padding: "0.6rem 1.2rem",
+        cursor: "pointer",
+        border: "none",
+        borderRadius: "4px",
+        color: "white",
+        minWidth: "140px",
+        textAlign: "center",
+        display: "inline-block",
+    };
+
+    const primaryBtn = { ...buttonStyle, backgroundColor: "#667eea" };
+    const secondaryBtn = { ...buttonStyle, backgroundColor: "#007bff" };
+    const dangerBtn = { ...buttonStyle, backgroundColor: "#dc3545" };
+
     const handleLogout = async () => {
         setLoading(true);
         await logout();
         setLoading(false);
-    };
-
-    const handleGoToProfile = () => {
-        navigate("/profile");
     };
 
     return (
@@ -27,58 +38,43 @@ const HomePage: React.FC = () => {
             <h1>Welcome to Smart Exchange</h1>
 
             <div style={{ marginTop: "1rem" }}>
-                <p><strong>Email:</strong> {user?.email}</p>
-                <p><strong>Job Title:</strong> {user?.jobTitle || "N/A"}</p>
-                <p><strong>Language:</strong> {settings?.language || "N/A"}</p>
-                <p><strong>Theme:</strong> {settings?.theme || "N/A"}</p>
+                <p>
+                    <strong>Email:</strong> {user?.email}
+                </p>
+                <p>
+                    <strong>Job Title:</strong> {user?.jobTitle || "N/A"}
+                </p>
+                <p>
+                    <strong>Language:</strong> {settings?.language || "N/A"}
+                </p>
+                <p>
+                    <strong>Theme:</strong> {settings?.theme || "N/A"}
+                </p>
             </div>
-            <div style={{ marginTop: "1rem", display: "flex", gap: "1rem" }}>
-                <button
-                    onClick={handleGoToProfile}
-                    style={{
-                        padding: "0.5rem 1rem",
-                        cursor: "pointer",
-                        backgroundColor: "#667eea",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "4px",
-                    }}
-                >
+
+            {/* Các nút hành động */}
+            <div style={{ marginTop: "1.5rem", display: "flex", gap: "1rem" }}>
+                <button onClick={() => navigate("/profile")} style={primaryBtn}>
                     Go to Profile
                 </button>
+
+                <button onClick={() => navigate("/settings")} style={primaryBtn}>
+                    Go to Settings
+                </button>
+
+                <button onClick={() => navigate("/chat")} style={secondaryBtn}>
+                    Go to Chat
+                </button>
             </div>
-
-            {/* NÚT ĐI ĐẾN TRANG CHAT */}
-            <Link
-                to="/chat"
-                style={{
-                    marginTop: "1.5rem",
-                    display: "inline-block",
-                    padding: "0.6rem 1.2rem",
-                    backgroundColor: "#007bff",
-                    color: "white",
-                    borderRadius: "6px",
-                    textDecoration: "none",
-                    fontWeight: "bold",
-                }}
-            >
-                Go to Chat
-            </Link>
-
-            <br />
 
             {/* Logout */}
             <button
                 onClick={handleLogout}
                 disabled={loading}
                 style={{
-                    marginTop: "1rem",
-                    padding: "0.5rem 1rem",
-                    cursor: "pointer",
-                    backgroundColor: "#dc3545",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "4px",
+                    ...dangerBtn,
+                    marginTop: "1.5rem",
+                    opacity: loading ? 0.6 : 1,
                 }}
             >
                 {loading ? "Logging out..." : "Logout"}

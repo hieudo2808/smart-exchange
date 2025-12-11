@@ -87,7 +87,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             const saved = localStorage.getItem("settings");
             if (saved) {
                 try {
-                    cachedSettings = { ...DEFAULT_SETTINGS, ...(JSON.parse(saved) as SettingsState) };
+                    cachedSettings = {
+                        ...DEFAULT_SETTINGS,
+                        ...(JSON.parse(saved) as SettingsState),
+                    };
                 } catch (error) {
                     console.warn("Failed to parse cached settings during verify:", error);
                 }
@@ -102,7 +105,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 });
 
                 applySettings({
-                    language: normalizeLanguage(currentUser.languageCode) || cachedSettings.language,
+                    language:
+                        normalizeLanguage(currentUser.languageCode) || cachedSettings.language,
                     theme: normalizeTheme(currentUser.themeMode) || cachedSettings.theme,
                 });
             } catch (error) {

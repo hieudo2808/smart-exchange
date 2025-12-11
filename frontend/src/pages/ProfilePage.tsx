@@ -31,7 +31,7 @@ const ProfilePage: React.FC = () => {
         if (user) {
             // Parse jobTitle to extract career and position
             // Format: "career:::position"
-            const [career, position] = (user.jobTitle || "").split(":::").map(s => s.trim());
+            const [career, position] = (user.jobTitle || "").split(":::").map((s) => s.trim());
             setFormData({
                 email: user.email,
                 career: career || "",
@@ -99,7 +99,9 @@ const ProfilePage: React.FC = () => {
                     {error && <div className="profile-error">{error}</div>}
 
                     {/* Success Message */}
-                    {success && <div className="profile-success">{t("profile.successMessage")}</div>}
+                    {success && (
+                        <div className="profile-success">{t("profile.successMessage")}</div>
+                    )}
 
                     {/* Profile Form */}
                     <form onSubmit={handleSubmit} className="profile-form">
