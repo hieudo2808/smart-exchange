@@ -36,6 +36,12 @@ const DEFAULT_SETTINGS: SettingsState = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const normalizeLanguage = (lang?: string): AppLanguage =>
+    lang === "vi" || lang === "jp" ? lang : DEFAULT_SETTINGS.language;
+
+const normalizeTheme = (theme?: string): AppTheme =>
+    theme === "light" || theme === "dark" ? theme : DEFAULT_SETTINGS.theme;
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
     const [settings, setSettings] = useState<SettingsState>(DEFAULT_SETTINGS);
@@ -96,8 +102,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 });
 
                 applySettings({
-                    language: currentUser.languageCode || cachedSettings.language,
-                    theme: currentUser.themeMode || cachedSettings.theme,
+                    language: normalizeLanguage(currentUser.languageCode) || cachedSettings.language,
+                    theme: normalizeTheme(currentUser.themeMode) || cachedSettings.theme,
                 });
             } catch (error) {
                 console.error("AuthContext - verification failed:", error);
@@ -119,8 +125,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         try {
             const currentUser = await userService.getCurrentUser();
             applySettings({
-                language: currentUser.languageCode || settings.language,
-                theme: currentUser.themeMode || settings.theme,
+                language: normalizeLanguage(currentUser.languageCode) || settings.language,
+                theme: normalizeTheme(currentUser.themeMode) || settings.theme,
             });
             setUser({
                 id: currentUser.userId,
@@ -145,8 +151,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             });
 
             applySettings({
-                language: updatedUser.languageCode || next.language,
-                theme: updatedUser.themeMode || next.theme,
+                language: normalizeLanguage(updatedUser.languageCode) || next.language,
+                theme: normalizeTheme(updatedUser.themeMode) || next.theme,
             });
         } catch (error) {
             console.error("Failed to update settings:", error);
