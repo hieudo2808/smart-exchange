@@ -1,6 +1,7 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
+import i18n from "../i18n";
 import { authService, userService } from "../services/api";
 
 interface User {
@@ -9,19 +10,64 @@ interface User {
     jobTitle: string | null;
 }
 
+export type AppLanguage = "vi" | "jp";
+export type AppTheme = "light" | "dark";
+
+export interface SettingsState {
+    language: AppLanguage;
+    theme: AppTheme;
+}
+
 interface AuthContextType {
     user: User | null;
+    settings: SettingsState;
     loading: boolean;
     setUser: (user: User | null) => void;
+    applySettings: (settings: SettingsState) => void;
+    updateSettings: (partial: Partial<SettingsState>) => Promise<void>;
+    refreshSettingsFromServer: () => Promise<void>;
     logout: () => Promise<void>;
 }
+
+const DEFAULT_SETTINGS: SettingsState = {
+    language: "vi",
+    theme: "light",
+};
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
+    const [settings, setSettings] = useState<SettingsState>(DEFAULT_SETTINGS);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
+
+    const applyVisualSettings = (next: SettingsState) => {
+        i18n.changeLanguage(next.language);
+        document.documentElement.setAttribute("data-theme", next.theme);
+    };
+
+    const applySettings = (next: SettingsState) => {
+        const merged = { ...DEFAULT_SETTINGS, ...next };
+        setSettings(merged);
+        applyVisualSettings(merged);
+        localStorage.setItem("settings", JSON.stringify(merged));
+    };
+
+    useEffect(() => {
+        const saved = localStorage.getItem("settings");
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved) as Partial<SettingsState>;
+                applySettings({ ...DEFAULT_SETTINGS, ...parsed });
+            } catch (error) {
+                console.warn("Failed to parse saved settings:", error);
+                applySettings(DEFAULT_SETTINGS);
+            }
+        } else {
+            applySettings(DEFAULT_SETTINGS);
+        }
+    }, []);
 
     useEffect(() => {
         const verifySession = async () => {
@@ -31,21 +77,82 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 return;
             }
 
+            let cachedSettings = DEFAULT_SETTINGS;
+            const saved = localStorage.getItem("settings");
+            if (saved) {
+                try {
+                    cachedSettings = { ...DEFAULT_SETTINGS, ...(JSON.parse(saved) as SettingsState) };
+                } catch (error) {
+                    console.warn("Failed to parse cached settings during verify:", error);
+                }
+            }
+
             try {
                 const currentUser = await userService.getCurrentUser();
-                setUser(currentUser);
+                setUser({
+                    id: currentUser.userId,
+                    email: currentUser.email,
+                    jobTitle: currentUser.jobTitle,
+                });
+
+                applySettings({
+                    language: currentUser.languageCode || cachedSettings.language,
+                    theme: currentUser.themeMode || cachedSettings.theme,
+                });
             } catch (error) {
                 console.error("AuthContext - verification failed:", error);
                 localStorage.removeItem("user");
                 localStorage.removeItem("settings");
                 setUser(null);
+                applySettings(DEFAULT_SETTINGS);
             } finally {
                 setLoading(false);
             }
         };
 
         verifySession();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    const refreshSettingsFromServer = async () => {
+        if (!user) return;
+        try {
+            const currentUser = await userService.getCurrentUser();
+            applySettings({
+                language: currentUser.languageCode || settings.language,
+                theme: currentUser.themeMode || settings.theme,
+            });
+            setUser({
+                id: currentUser.userId,
+                email: currentUser.email,
+                jobTitle: currentUser.jobTitle,
+            });
+        } catch (error) {
+            console.error("Failed to refresh settings from server:", error);
+        }
+    };
+
+    const updateSettings = async (partial: Partial<SettingsState>) => {
+        const next = { ...settings, ...partial };
+        applySettings(next);
+
+        if (!user) return;
+
+        try {
+            const updatedUser = await userService.updateUser(user.id, {
+                language: next.language,
+                themeMode: next.theme,
+            });
+
+            applySettings({
+                language: updatedUser.languageCode || next.language,
+                theme: updatedUser.themeMode || next.theme,
+            });
+        } catch (error) {
+            console.error("Failed to update settings:", error);
+            throw error as Error;
+        }
+    };
 
     const logout = async () => {
         try {
@@ -55,13 +162,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
 
         setUser(null);
+        applySettings(DEFAULT_SETTINGS);
         localStorage.removeItem("user");
         localStorage.removeItem("settings");
         navigate("/login");
     };
 
     return (
-        <AuthContext.Provider value={{ user, loading, setUser, logout }}>
+        <AuthContext.Provider
+            value={{
+                user,
+                settings,
+                loading,
+                setUser,
+                applySettings,
+                updateSettings,
+                refreshSettingsFromServer,
+                logout,
+            }}
+        >
             {children}
         </AuthContext.Provider>
     );

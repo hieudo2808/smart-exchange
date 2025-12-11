@@ -1,25 +1,25 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { useLanguage } from "../contexts/LanguageContext";
+import { useAuth } from "../contexts/AuthContext";
 
 const LanguageSwitcher: React.FC = () => {
     const { t } = useTranslation();
-    const { lang, setLang } = useLanguage();
+    const { settings, updateSettings } = useAuth();
 
     return (
         <div className="lang-switch">
             <button
                 type="button"
-                className={`lang-btn ${lang === "vi" ? "active" : ""}`}
-                onClick={() => setLang("vi")}
+                className={`lang-btn ${settings.language === "vi" ? "active" : ""}`}
+                onClick={() => updateSettings({ language: "vi" })}
                 aria-label={t("lang.ariaVi")}
             >
                 VI
             </button>
             <button
                 type="button"
-                className={`lang-btn ${lang === "jp" ? "active" : ""}`}
-                onClick={() => setLang("jp")}
+                className={`lang-btn ${settings.language === "jp" ? "active" : ""}`}
+                onClick={() => updateSettings({ language: "jp" })}
                 aria-label={t("lang.ariaJp")}
             >
                 JP

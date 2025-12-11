@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
 const HomePage: React.FC = () => {
-    const { user, logout } = useAuth();
+    const { user, settings, logout } = useAuth();
     const navigate = useNavigate();
     const [loading, setLoading] = React.useState(false);
 
@@ -18,10 +18,6 @@ const HomePage: React.FC = () => {
     const handleGoToProfile = () => {
         navigate("/profile");
     };
-
-    const settings = localStorage.getItem("settings")
-        ? JSON.parse(localStorage.getItem("settings") || "{}")
-        : null;
 
     return (
         <div style={{ padding: "2rem" }}>
