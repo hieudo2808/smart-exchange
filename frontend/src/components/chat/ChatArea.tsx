@@ -3,17 +3,12 @@ import MsgList from "./MsgList";
 import MessageInput from "./MessageInput";
 import "../../styles/ChatPage.css";
 
-export interface Message {
-    id: number;
-    sender: "user" | "other";
-    text: string;
-    timestamp: string;
-}
+import type { Message } from "../../types/message"; // dùng interface chung
 
 export default function ChatArea() {
     const [messages, setMessages] = useState<Message[]>([
         {
-            id: 1,
+            id: "1",
             sender: "other",
             text: "お疲れ様です。確認をお願いします。",
             timestamp: "10:22",
@@ -22,7 +17,6 @@ export default function ChatArea() {
 
     const listRef = useRef<HTMLDivElement>(null);
 
-    // Auto scroll
     useEffect(() => {
         listRef.current?.scrollTo({
             top: listRef.current.scrollHeight,
@@ -32,8 +26,8 @@ export default function ChatArea() {
 
     const handleSend = (text: string) => {
         const newMsg: Message = {
-            id: Date.now(),
-            sender: "user",                     
+            id: Date.now().toString(),
+            sender: "user",
             text,
             timestamp: new Date().toLocaleTimeString([], {
                 hour: "2-digit",
@@ -41,15 +35,14 @@ export default function ChatArea() {
             }),
         };
 
-        setMessages((prev) => [...prev, newMsg]);
+        setMessages(prev => [...prev, newMsg]);
     };
 
-    return (                                                                                                                                                                                                                   
+    return (
         <div className="chat-area-wrapper">
             <div className="chat-area" ref={listRef}>
                 <MsgList messages={messages} />
             </div>
-
             <MessageInput onSend={handleSend} />
         </div>
     );
