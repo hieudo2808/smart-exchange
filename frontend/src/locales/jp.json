@@ -36,8 +36,102 @@
         },
         "googleAlt": "Googleアカウントでログイン"
     },
+    "profile": {
+        "title": "プロフィール",
+        "emailLabel": "電子メール",
+        "careerLabel": "自分のキャリア",
+        "careerPlaceholder": "キャリア情報を入力してください...",
+        "positionLabel": "自分の立場",
+        "positionPlaceholder": "職位情報を入力してください...",
+        "updateButton": "アップデート",
+        "updating": "アップデート中...",
+        "settingsBackButton": "設定画面に戻る",
+        "successMessage": "プロフィールの更新に成功しました！",
+        "errorNotAuthenticated": "ログインしていません。",
+        "errorUpdateFailed": "プロフィールの更新に失敗しました。"
+    },
     "lang": {
         "ariaVi": "ベトナム語に切り替える",
         "ariaJp": "日本語に切り替える"
+    },
+    "settings": {
+        "breadcrumb": "設定",
+        "title": "設定",
+        "userLabel": "ユーザー",
+        "menu": {
+            "title": "メニュー",
+            "account": "アカウント",
+            "profile": "個人情報",
+            "theme": "外観",
+            "language": "言語",
+            "notifications": "通知",
+            "security": "セキュリティ",
+            "system": "システム",
+            "help": "ヘルプ",
+            "logout": "ログアウト"
+        },
+        "backHome": "ホーム",
+        "userDisplay": "ユーザー名: {{username}}",
+        "meta": {
+            "language": "言語",
+            "theme": "テーマ"
+        },
+        "common": {
+            "saving": "保存中...",
+            "autoSave": "変更は自動的に保存されます",
+            "error": "エラーが発生しました"
+        },
+        "overview": {
+            "title": "アカウント設定",
+            "subtitle": "アカウント情報を管理します。",
+            "user": "アカウント",
+            "usernameLabel": "ユーザー名",
+            "emailLabel": "メール",
+            "edit": "アカウントを編集"
+        },
+        "language": {
+            "title": "言語設定",
+            "subtitle": "アプリ全体の表示言語を選択します。",
+            "label": "言語",
+            "options": {
+                "vi": "ベトナム語",
+                "jp": "日本語"
+            }
+        },
+        "theme": {
+            "title": "ライト/ダークテーマ",
+            "subtitle": "アプリの背景色を切り替えます。",
+            "label": "テーマ",
+            "options": {
+                "light": "ライト",
+                "dark": "ダーク"
+            }
+        },
+        "notifications": {
+            "title": "通知設定",
+            "subtitle": "通知とアラートを管理します。",
+            "comingSoon": "この機能は間もなく利用可能になります。"
+        },
+        "security": {
+            "title": "セキュリティ設定",
+            "subtitle": "パスワードとその他のセキュリティ設定を管理します。",
+            "comingSoon": "この機能は間もなく利用可能になります。"
+        },
+        "system": {
+            "title": "システム設定",
+            "subtitle": "システムオプションと高度な設定。",
+            "comingSoon": "この機能は間もなく利用可能になります。"
+        },
+        "help": {
+            "title": "ヘルプ",
+            "subtitle": "よくある質問の回答を見つけます。",
+            "comingSoon": "この機能は間もなく利用可能になります。"
+        },
+        "logout": {
+            "title": "ログアウト",
+            "subtitle": "現在のセッションを終了します。",
+            "cta": "ログアウトする",
+            "processing": "ログアウト中..."
+        }
     }
 }

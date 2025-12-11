@@ -16,6 +16,8 @@ model User {
   
   fullName  String   @db.NVarChar(100)
   jobTitle  String?  @db.NVarChar(100)
+
+  isTutorialCompleted Boolean @default(false)
   
   languageCode String  @default("jp") @db.VarChar(3) 
   themeMode    String  @default("light") @db.VarChar(7)

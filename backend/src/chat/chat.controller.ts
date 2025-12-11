@@ -1,0 +1,19 @@
+import { Controller, Get, Param, Query, UseGuards, Request } from "@nestjs/common";
+import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
+import { ChatService } from "./chat.service";
+
+@Controller("chats")
+export class ChatController {
+    constructor(private readonly chatService: ChatService) {}
+
+    @UseGuards(JwtAuthGuard)
+    @Get(":chatId/messages")
+    async getChatMessages(
+        @Param("chatId") chatId: string,
+        @Query("limit") limit = "50",
+        @Request() req: any
+    ) {
+        const parsedLimit = Math.min(Math.max(Number(limit) || 50, 1), 200);
+        return this.chatService.getMessages(chatId, req.user.userId, parsedLimit);
+    }
+}

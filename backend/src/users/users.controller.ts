@@ -12,6 +12,7 @@ import {
 import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
+import { UpdateJobInfoDto } from "./dto/update-job-info.dto";
 import { UsersService } from "./users.service";
 
 @Controller("users")
@@ -42,6 +43,12 @@ export class UsersController {
     @Patch(":id")
     update(@Param("id") id: string, @Body() updateUserDto: UpdateUserDto) {
         return this.usersService.update(id, updateUserDto);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Patch(":id/job-info")
+    updateJobInfo(@Param("id") id: string, @Body() updateJobInfoDto: UpdateJobInfoDto) {
+        return this.usersService.updateJobInfo(id, updateJobInfoDto);
     }
 
     @Delete(":id")
