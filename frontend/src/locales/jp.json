@@ -25,7 +25,6 @@
             "passwordConfirmLabel": "パスワード確認",
             "passwordConfirmPlaceholder": "もう一度パスワードを入力してください",
             "submit": "登録",
-            "google": "Googleで登録",
             "bottomText": "すでにアカウントをお持ちですか？",
             "bottomLinkText": "ログイン",
             "registerProcessing": "処理中...",
