@@ -12,7 +12,7 @@ import { useAuth } from "../contexts/AuthContext";
 const LoginPage: React.FC = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
-    const { setUser } = useAuth();
+    const { setUser, applySettings } = useAuth();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
@@ -33,8 +33,10 @@ const LoginPage: React.FC = () => {
             const result = await authService.login({ email, password });
 
             localStorage.setItem("user", JSON.stringify(result.user));
-            localStorage.setItem("settings", JSON.stringify(result.settings));
-
+            applySettings({
+                language: result.settings.language as "vi" | "jp",
+                theme: result.settings.theme as "light" | "dark",
+            });
             setUser(result.user);
             navigate("/");
         } catch (err) {

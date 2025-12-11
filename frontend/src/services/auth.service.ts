@@ -15,9 +15,12 @@ export interface LoginRequest {
 
 // Response types
 export interface UserInfo {
-    id: string;
+    id?: string;
+    userId?: string;
     email: string;
     jobTitle: string | null;
+    languageCode?: string;
+    themeMode?: string;
 }
 
 export interface UserSettings {
