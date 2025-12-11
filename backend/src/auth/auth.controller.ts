@@ -5,6 +5,8 @@ import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "./dto/login.dto";
 import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { GoogleLoginDto } from "./dto/google-login.dto";
+import { RefreshTokenDto } from "./dto/refresh-token.dto";
+import { setAuthCookie } from "~/common/helpers/cookie.helper";
 
 @Controller("auth")
 export class AuthController {
@@ -21,12 +23,7 @@ export class AuthController {
 
         const jwtExpiration = parseInt(process.env.JWT_EXPIRATION || "3600", 10);
 
-        res.cookie("access_token", result.token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "lax",
-            maxAge: jwtExpiration * 1000,
-        });
+        setAuthCookie(res, result.token, result.refreshToken, jwtExpiration);
 
         return {
             user: result.user,
@@ -38,6 +35,8 @@ export class AuthController {
     @UseGuards(JwtAuthGuard)
     logout(@Res({ passthrough: true }) res: Response) {
         res.clearCookie("access_token");
+        res.clearCookie("refresh_token");
+
         return this.authService.logout();
     }
 
@@ -50,16 +49,36 @@ export class AuthController {
 
         const jwtExpiration = parseInt(process.env.JWT_EXPIRATION || "3600", 10);
 
-        res.cookie("access_token", result.token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "lax",
-            maxAge: jwtExpiration * 1000,
-        });
+        setAuthCookie(res, result.token, result.refreshToken, jwtExpiration);
 
         return {
             user: result.user,
             settings: result.settings,
         };
+    }
+
+    // Refresh access token endpoint
+    @Post("refresh")
+    refresh(@Body() refreshTokenDto: RefreshTokenDto, @Res({ passthrough: true }) res: Response) {
+        const result = this.authService.refreshAccessToken(refreshTokenDto);
+
+        const jwtExpiration = parseInt(process.env.JWT_EXPIRATION || "3600", 10);
+
+        setAuthCookie(res, result.token, result.refreshToken, jwtExpiration);
+
+        return {
+            message: "Token refreshed successfully",
+        };
+    }
+
+    // Revoke refresh token endpoint
+    @Post("revoke")
+    @UseGuards(JwtAuthGuard)
+    revoke(@Res({ passthrough: true }) res: Response) {
+        const result = this.authService.revokeRefreshToken();
+
+        res.clearCookie("refresh_token");
+
+        return result;
     }
 }

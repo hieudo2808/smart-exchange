@@ -1,15 +1,18 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useGoogleLogin } from "@react-oauth/google";
 import AuthLayout from "../layouts/AuthLayout";
 import TextInput from "../components/TextInput";
 import PrimaryButton from "../components/PrimaryButton";
 import { authService } from "../services/api";
+import { useAuth } from "../contexts/AuthContext";
 import googleLogo from "../assets/google-logo.png";
 
 const RegisterPage: React.FC = () => {
     const { t } = useTranslation();
     const navigate = useNavigate();
+    const { setUser } = useAuth();
 
     const [fullName, setFullName] = useState("");
     const [email, setEmail] = useState("");
@@ -50,9 +53,34 @@ const RegisterPage: React.FC = () => {
         }
     };
 
-    const handleGoogleRegister = () => {
-        //window.location.href = "/api/auth/google";
-    };
+    const handleGoogleLogin = useGoogleLogin({
+        onSuccess: async (tokenResponse) => {
+            try {
+                setLoading(true);
+                
+                // Gọi backend với access token
+                const result = await authService.loginWithGoogle({
+                    token: tokenResponse.access_token,
+                });
+
+                localStorage.setItem("user", JSON.stringify(result.user));
+                localStorage.setItem("settings", JSON.stringify(result.settings));
+
+                setUser(result.user);
+                navigate("/");
+            } catch (err) {
+                console.error("Google login error:", err);
+                const error = err as Error;
+                setError(error?.message || t("auth.login.googleError"));
+            } finally {
+                setLoading(false);
+            }
+        },
+        onError: () => {
+            setError(t("auth.login.googleError"));
+        },
+        flow: 'implicit',
+    });
 
     return (
         <AuthLayout title={t("auth.register.title")}>
@@ -96,9 +124,9 @@ const RegisterPage: React.FC = () => {
                 </PrimaryButton>
             </form>
 
-            <button className="google-btn" onClick={handleGoogleRegister}>
+            <button className="google-btn" onClick={() => handleGoogleLogin()} type="button">
                 <img src={googleLogo} alt={t("auth.googleAlt")} className="google-icon" />
-                <span>{t("auth.register.google")}</span>
+                <span>{t("auth.login.google")}</span>
             </button>
 
             <div className="auth-bottom-text">

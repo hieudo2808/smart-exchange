@@ -38,6 +38,10 @@ export interface RegisterResponse {
     data: null;
 }
 
+export interface GoogleLoginRequest {
+    token: string;
+}
+
 class AuthService {
     async register(data: RegisterRequest): Promise<RegisterResponse> {
         return axiosInstance.post("/auth/register", data);
@@ -45,6 +49,10 @@ class AuthService {
 
     async login(data: LoginRequest): Promise<LoginResponse> {
         return axiosInstance.post("/auth/login", data);
+    }
+
+    async loginWithGoogle(data: GoogleLoginRequest): Promise<LoginResponse> {
+        return axiosInstance.post("/auth/google", data);
     }
 
     async logout(): Promise<{ message: string }> {
