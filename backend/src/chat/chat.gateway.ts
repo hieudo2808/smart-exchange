@@ -54,6 +54,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         client.disconnect();
     }
 
+    @SubscribeMessage("join_chat")
+    handleJoinChat(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() payload: { chatId: string }
+    ) {
+        if (payload.chatId) {
+            client.join(`chat-${payload.chatId}`);
+        }
+    }
+
     @SubscribeMessage("send_message")
     async handleSendMessage(
         @ConnectedSocket() client: Socket,
@@ -92,7 +102,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
         client.join(`chat-${chat.chatId}`);
         this.server.to(`chat-${chat.chatId}`).emit("message_received", messageResponse);
-        this.server.to(`user-${receiverId}`).emit("message_received", messageResponse);
+        this.server.to(`user-${receiverId}`).emit("new_message_notification", messageResponse);
 
         return messageResponse;
     }

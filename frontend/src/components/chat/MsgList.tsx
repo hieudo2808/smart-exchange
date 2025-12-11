@@ -1,5 +1,5 @@
 import MessageBubble from "./MessageBubble";
-import type { Message } from "./ChatArea";
+import type { DisplayMessage as Message } from "./ChatArea";
 
 export default function MsgList({ messages }: { messages: Message[] }) {
     return (

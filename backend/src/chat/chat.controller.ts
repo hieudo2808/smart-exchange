@@ -16,4 +16,10 @@ export class ChatController {
         const parsedLimit = Math.min(Math.max(Number(limit) || 50, 1), 200);
         return this.chatService.getMessages(chatId, req.user.userId, parsedLimit);
     }
+
+    @UseGuards(JwtAuthGuard)
+    @Get()
+    async getUserChats(@Request() req: any) {
+        return this.chatService.getUserChats(req.user.userId);
+    }
 }

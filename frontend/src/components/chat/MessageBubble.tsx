@@ -1,4 +1,4 @@
-import type { Message } from "./ChatArea";
+import type { DisplayMessage as Message } from "./ChatArea";
 import avatarUser from "../../assets/avatar-user.png";
 import avatarOther from "../../assets/avatar-other.png";
 

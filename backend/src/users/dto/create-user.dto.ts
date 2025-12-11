@@ -1,4 +1,4 @@
-import { IsEmail, IsIn, IsOptional, IsString, MinLength } from "class-validator";
+import { IsEmail, IsIn, IsOptional, IsString, MinLength, IsBoolean } from "class-validator";
 
 export class CreateUserDto {
     @IsEmail()
@@ -8,8 +8,9 @@ export class CreateUserDto {
     @MinLength(8)
     password: string;
 
+    @IsOptional()
     @IsString()
-    fullName: string;
+    fullName?: string;
 
     @IsOptional()
     @IsString()
@@ -26,6 +27,6 @@ export class CreateUserDto {
     themeMode?: string;
 
     @IsOptional()
-    @IsIn([true, false])
-    isTutorialCompleted: boolean;
+    @IsBoolean()
+    isTutorialCompleted?: boolean;
 }

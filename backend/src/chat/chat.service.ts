@@ -84,4 +84,21 @@ export class ChatService {
             },
         });
     }
+
+    async getUserChats(userId: string) {
+        return this.prisma.chat.findMany({
+            where: {
+                OR: [{ userOneId: userId }, { userTwoId: userId }],
+            },
+            include: {
+                userOne: { select: { userId: true, fullName: true, email: true } },
+                userTwo: { select: { userId: true, fullName: true, email: true } },
+                messages: {
+                    orderBy: { createdAt: "desc" },
+                    take: 1,
+                },
+            },
+            orderBy: { updateAt: "desc" },
+        });
+    }
 }
