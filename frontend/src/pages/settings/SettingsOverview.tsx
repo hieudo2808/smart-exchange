@@ -1,13 +1,17 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const SettingsOverview: React.FC = () => {
     const { t } = useTranslation();
     const { user } = useAuth();
+    const navigate = useNavigate();
 
     const username = user?.email?.split("@")[0] || "N/A";
     const email = user?.email || "N/A";
+
+    const goToProfile = () => navigate("/profile");
 
     return (
         <div className="settings-card">
@@ -24,7 +28,7 @@ const SettingsOverview: React.FC = () => {
                 </div>
             </div>
 
-            <button className="settings-primary-btn" type="button">
+            <button className="settings-primary-btn" type="button" onClick={goToProfile}>
                 {t("settings.overview.edit")}
             </button>
         </div>

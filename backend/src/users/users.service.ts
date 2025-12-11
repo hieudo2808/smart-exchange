@@ -7,6 +7,7 @@ import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { UpdateJobInfoDto } from "./dto/update-job-info.dto";
 import { JobInfoHelper } from "../common/helpers/job-info.helper";
+import * as crypto from "crypto";
 
 @Injectable()
 export class UsersService {
@@ -132,6 +133,34 @@ export class UsersService {
                 error.message || "Invalid job information"
             );
         }
+    }
+
+    async upsertGoogleUser(payload: { email: string; fullName: string }) {
+        const existingUser = await this.prisma.user.findUnique({
+            where: { email: payload.email },
+        });
+
+        if (existingUser) {
+            return this.prisma.user.update({
+                where: { userId: existingUser.userId },
+                data: {
+                    fullName: payload.fullName,
+                },
+            });
+        }
+
+        const randomPassword = crypto.randomBytes(16).toString("hex");
+        const hashedPassword = await BcryptSecurity.hashPassword(randomPassword);
+
+        return this.prisma.user.create({
+            data: {
+                email: payload.email,
+                password: hashedPassword,
+                fullName: payload.fullName,
+                languageCode: "ja",
+                themeMode: "light",
+            },
+        });
     }
 
     private serialize(user: any) {

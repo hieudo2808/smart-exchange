@@ -6,9 +6,13 @@ import { AppException } from "~/common/exceptions/app.exception";
 import { ExceptionCode } from "~/common/constants/exception-code.constant";
 import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "./dto/login.dto";
+import { GoogleLoginDto } from "./dto/google-login.dto";
+import { OAuth2Client } from "google-auth-library";
 
 @Injectable()
 export class AuthService {
+    private readonly googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
     constructor(
         private readonly usersService: UsersService,
         private readonly jwtService: JwtService
@@ -53,6 +57,39 @@ export class AuthService {
     logout() {
         return {
             message: "Logout successful",
+        };
+    }
+
+    async loginWithGoogle(googleLoginDto: GoogleLoginDto) {
+        const ticket = await this.googleClient.verifyIdToken({
+            idToken: googleLoginDto.token,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+
+        const payload = ticket.getPayload();
+
+        if (!payload || !payload.email) {
+            throw new AppException(ExceptionCode.UNAUTHORIZED, "Google token is invalid");
+        }
+
+        const user = await this.usersService.upsertGoogleUser({
+            email: payload.email,
+            fullName: payload.name || payload.email.split("@")[0],
+        });
+
+        const token = this.jwtService.sign({ user_id: user.userId, email: user.email });
+
+        return {
+            token,
+            user: {
+                id: user.userId,
+                email: user.email,
+                jobTitle: user.jobTitle,
+            },
+            settings: {
+                language: user.languageCode,
+                theme: user.themeMode,
+            },
         };
     }
 }
