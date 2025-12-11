@@ -24,4 +24,8 @@ export class CreateUserDto {
     @IsString()
     @IsIn(["light", "dark"])
     themeMode?: string;
+
+    @IsOptional()
+    @IsIn([true, false])
+    isTutorialCompleted: boolean;
 }

@@ -13,7 +13,6 @@ import { ChatService } from "./chat.service";
 import { ExceptionCode } from "../common/constants/exception-code.constant";
 import { AppException } from "../common/exceptions/app.exception";
 import { SendMessageDto } from "./dto/send-message.dto";
-import { UsePipes } from "@nestjs/common";
 
 @WebSocketGateway({
     cors: {

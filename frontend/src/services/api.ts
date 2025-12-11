@@ -10,4 +10,5 @@ export type {
     RegisterResponse,
     UserInfo,
     UserSettings,
+    GoogleLoginRequest,
 } from "./auth.service";

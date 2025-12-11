@@ -6,6 +6,7 @@ import { LoginDto } from "./dto/login.dto";
 import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { GoogleLoginDto } from "./dto/google-login.dto";
 import { RefreshTokenDto } from "./dto/refresh-token.dto";
+import { setAuthCookie } from "~/common/helpers/cookie.helper";
 
 @Controller("auth")
 export class AuthController {
@@ -22,20 +23,7 @@ export class AuthController {
 
         const jwtExpiration = parseInt(process.env.JWT_EXPIRATION || "3600", 10);
 
-        res.cookie("access_token", result.token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "lax",
-            maxAge: jwtExpiration * 1000,
-        });
-
-        // Lưu refresh token vào cookie 
-        res.cookie("refresh_token", result.refreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "lax",
-            maxAge: 30 * 24 * 60 * 60 * 1000, // 30 ngày
-        });
+        setAuthCookie(res, result.token, result.refreshToken, jwtExpiration);
 
         return {
             user: result.user,
@@ -48,7 +36,7 @@ export class AuthController {
     logout(@Res({ passthrough: true }) res: Response) {
         res.clearCookie("access_token");
         res.clearCookie("refresh_token");
-        
+
         return this.authService.logout();
     }
 
@@ -61,20 +49,7 @@ export class AuthController {
 
         const jwtExpiration = parseInt(process.env.JWT_EXPIRATION || "3600", 10);
 
-        res.cookie("access_token", result.token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "lax",
-            maxAge: jwtExpiration * 1000,
-        });
-
-        // Lưu refresh token vào cookie 
-        res.cookie("refresh_token", result.refreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "lax",
-            maxAge: 30 * 24 * 60 * 60 * 1000, // 30 ngày
-        });
+        setAuthCookie(res, result.token, result.refreshToken, jwtExpiration);
 
         return {
             user: result.user,
@@ -82,38 +57,21 @@ export class AuthController {
         };
     }
 
-    // Refresh access token endpoint 
+    // Refresh access token endpoint
     @Post("refresh")
-    refresh(
-        @Body() refreshTokenDto: RefreshTokenDto,
-        @Res({ passthrough: true }) res: Response
-    ) {
+    refresh(@Body() refreshTokenDto: RefreshTokenDto, @Res({ passthrough: true }) res: Response) {
         const result = this.authService.refreshAccessToken(refreshTokenDto);
 
         const jwtExpiration = parseInt(process.env.JWT_EXPIRATION || "3600", 10);
 
-        // Cập nhật access token cookie
-        res.cookie("access_token", result.token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "lax",
-            maxAge: jwtExpiration * 1000,
-        });
-
-        // Cập nhật refresh token cookie
-        res.cookie("refresh_token", result.refreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "lax",
-            maxAge: 30 * 24 * 60 * 60 * 1000,
-        });
+        setAuthCookie(res, result.token, result.refreshToken, jwtExpiration);
 
         return {
             message: "Token refreshed successfully",
         };
     }
 
-    // Revoke refresh token endpoint 
+    // Revoke refresh token endpoint
     @Post("revoke")
     @UseGuards(JwtAuthGuard)
     revoke(@Res({ passthrough: true }) res: Response) {
