@@ -17,10 +17,13 @@ model User {
   fullName  String   @db.NVarChar(100)
   jobTitle  String?  @db.NVarChar(100)
 
+  // Giữ lại dòng này, xóa dòng trùng ở dưới
   isTutorialCompleted Boolean @default(false)
   
   languageCode String  @default("jp") @db.VarChar(3) 
   themeMode    String  @default("light") @db.VarChar(7)
+  
+  // --- ĐÃ XÓA DÒNG isTutorialCompleted BỊ TRÙNG Ở ĐÂY ---
   
   createdAt DateTime @default(now()) @db.DateTime2
 
@@ -44,7 +47,7 @@ model Chat {
   // Đảm bảo tính duy nhất của cặp chat
   @@unique([userOneId, userTwoId], name: "UQ_ConversationPair")
   
-  // Index để sort nhanh (Lưu ý: Prisma chưa hỗ trợ cú pháp INCLUDE trực tiếp ở đây, xem phần dưới)
+  // Index để sort nhanh
   @@index([userOneId, updateAt(sort: Desc)], name: "IDX_Chat_UserOne_Sort")
   @@index([userTwoId, updateAt(sort: Desc)], name: "IDX_Chat_UserTwo_Sort")
   
@@ -55,7 +58,7 @@ model Message {
   messageId         String   @id @default(dbgenerated("NEWSEQUENTIALID()")) @db.UniqueIdentifier
   chatId            String   @db.UniqueIdentifier
   senderId          String   @db.UniqueIdentifier
-  content           String  @db.NVarChar(Max)
+  content           String   @db.NVarChar(Max)
   aiAnalysisContent String?  @db.NVarChar(Max)
   
   createdAt         DateTime @default(now()) @db.DateTime2

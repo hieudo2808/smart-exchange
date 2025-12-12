@@ -30,6 +30,16 @@ export class UsersController {
         return this.usersService.create(createUserDto);
     }
 
+    // --- 👇 QUAN TRỌNG: Phải đặt API này LÊN TRÊN các API có :id ---
+    // Nếu để ở dưới, NestJS sẽ tưởng "tutorial-completion" là một cái ID.
+    @UseGuards(JwtAuthGuard) // 1. Thêm Guard để xác thực
+    @Patch('tutorial-completion')
+    completeTutorial(@Request() req: any) {
+        // 2. Sửa req.user.id thành req.user.userId (cho giống hàm getCurrentUser)
+        return this.usersService.updateTutorialStatus(req.user.userId);
+    }
+    // ----------------------------------------------------------------
+
     @Get()
     findAll() {
         return this.usersService.findAll();

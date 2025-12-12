@@ -38,7 +38,6 @@ export class AuthService {
         const payload = { user_id: user.userId, email: user.email };
         const token = this.jwtService.sign(payload, { expiresIn: "1h" });
 
-        // Generate refresh token bằng JWT
         const refreshToken = this.jwtService.sign(
             { user_id: user.userId, type: "refresh" },
             {
@@ -56,6 +55,8 @@ export class AuthService {
                 id: userWithoutPassword.userId,
                 email: userWithoutPassword.email,
                 jobTitle: userWithoutPassword.jobTitle,
+                // 👇 [QUAN TRỌNG] Thêm dòng này:
+                isTutorialCompleted: userWithoutPassword.isTutorialCompleted, 
             },
             settings: {
                 language: userWithoutPassword.languageCode,
@@ -74,23 +75,19 @@ export class AuthService {
     // Refresh access token bằng JWT
     refreshAccessToken(refreshTokenDto: RefreshTokenDto) {
         try {
-            // Verify refresh token
             const payload = this.jwtService.verify(refreshTokenDto.refreshToken, {
                 secret: process.env.REFRESH_JWT_SECRET,
             }) as { user_id: string; email: string; type: string };
 
-            // Kiểm tra loại token
             if (!payload || payload.type !== "refresh") {
                 throw new AppException(ExceptionCode.UNAUTHORIZED, "Invalid token type");
             }
 
-            // Tạo access token mới
             const newAccessToken = this.jwtService.sign(
                 { user_id: payload.user_id, email: payload.email },
                 { expiresIn: "1h" }
             );
 
-            // Tạo refresh token mới
             const newRefreshToken = this.jwtService.sign(
                 { user_id: payload.user_id, type: "refresh" },
                 {
@@ -108,7 +105,6 @@ export class AuthService {
         }
     }
 
-    // Revoke refresh token  - Với JWT không cần revoke, chỉ cần xóa cookie
     revokeRefreshToken() {
         return {
             message: "Refresh token revoked successfully",
@@ -117,7 +113,6 @@ export class AuthService {
 
     async loginWithGoogle(googleLoginDto: GoogleLoginDto) {
         try {
-            // Sử dụng access token để lấy thông tin user từ Google
             const response = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
                 headers: {
                     Authorization: `Bearer ${googleLoginDto.token}`,
@@ -151,7 +146,6 @@ export class AuthService {
                 { expiresIn: "1h" }
             );
 
-            // Generate refresh token bằng JWT
             const refreshToken = this.jwtService.sign(
                 { user_id: user.userId, type: "refresh" },
                 {
@@ -167,6 +161,8 @@ export class AuthService {
                     id: user.userId,
                     email: user.email,
                     jobTitle: user.jobTitle,
+                    // 👇 [QUAN TRỌNG] Thêm dòng này cho Google Login luôn:
+                    isTutorialCompleted: user.isTutorialCompleted,
                 },
                 settings: {
                     language: user.languageCode,

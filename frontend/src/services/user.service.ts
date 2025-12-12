@@ -15,6 +15,12 @@ export interface CurrentUserResponse extends UserInfo {
 export interface UpdateSettingsDto {
     language?: string;
     themeMode?: string;
+}  
+    
+export interface UserProfile extends UserInfo {
+  name?: string;
+  avatar?: string;
+  isTutorialCompleted: boolean; // <-- Trường quan trọng cho tính năng Tutorial
 }
 
 class UserService {
@@ -35,6 +41,20 @@ class UserService {
 
     async deleteUser(userId: string): Promise<void> {
         return axiosInstance.delete(`/users/${userId}`);
+    }
+
+    async getProfile(): Promise<UserProfile> {
+        return axiosInstance.get("/users/profile");
+    }
+
+  // Cập nhật thông tin User
+    async updateProfile(data: Partial<UserProfile>): Promise<UserProfile> {
+        return axiosInstance.patch("/users/profile", data);
+    }
+
+  // Đánh dấu đã hoàn thành Tutorial
+    async completeTutorial(): Promise<UserProfile> {
+        return axiosInstance.patch("/users/tutorial-completion");
     }
 }
 

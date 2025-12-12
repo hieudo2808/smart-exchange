@@ -132,5 +132,31 @@
             "cta": "Đăng xuất",
             "processing": "Đang đăng xuất..."
         }
+    },
+    "tutorial": {
+        "pageTitle": "HƯỚNG DẪN SỬ DỤNG",
+        "topBannerBtn": "Bạn đã hiểu hết chưa?",
+        "stepBadge": "BƯỚC",
+        "cta": {
+            "title": "Bạn đã sẵn sàng trải nghiệm chưa?",
+            "desc": "Nếu đã hiểu rõ các bước trên, hãy bắt đầu cuộc trò chuyện ngay!",
+            "btn": "Đã hiểu & Bắt đầu chat",
+            "loading": "Đang xử lý...",
+            "note": "*Nhấn nút trên đồng nghĩa với việc bạn đã hiểu rõ cách sử dụng."
+        },
+        "steps": {
+            "step1": {
+                "title": "Nhập tin nhắn",
+                "desc": "Nhập nội dung bạn muốn gửi bằng tiếng Việt hoặc tiếng Nhật vào khung chat. Hệ thống sẽ tiếp nhận thông tin đầu vào của bạn ngay lập tức."
+            },
+            "step2": {
+                "title": "AI Phân tích",
+                "desc": "Hệ thống AI sẽ tự động kiểm tra ngữ pháp, văn phong và đề xuất chỉnh sửa để câu văn trở nên tự nhiên, chuyên nghiệp nhất."
+            },
+            "step3": {
+                "title": "Chọn & Gửi",
+                "desc": "Xem xét các gợi ý từ AI, lựa chọn câu trả lời phù hợp nhất với ngữ cảnh và gửi tin nhắn đi cho đối tác."
+            }
+        }
     }
 }
