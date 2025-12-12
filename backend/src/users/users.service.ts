@@ -169,18 +169,18 @@ export class UsersService {
     }
 
     // --- SỬA LỖI Ở ĐÂY ---
-    
+
     // Gộp chung logic vào hàm này, đảm bảo kiểu dữ liệu đầu vào nhất quán (string vì userId trong Prisma của bạn có vẻ là String/UUID)
     async updateTutorialStatus(user_id: string) {
         return this.prisma.user.update({
             where: { userId: user_id }, // Dùng đúng biến user_id truyền vào
             data: { isTutorialCompleted: true },
-            select: { 
-                userId: true, 
-                email: true, 
-                fullName: true, 
-                isTutorialCompleted: true 
-            }
+            select: {
+                userId: true,
+                email: true,
+                fullName: true,
+                isTutorialCompleted: true,
+            },
         });
     }
 }

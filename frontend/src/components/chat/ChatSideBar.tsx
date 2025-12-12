@@ -23,11 +23,13 @@ export default function ChatSideBar({ onSelectChat, selectedChatId, onRefreshRef
                 chatService.getAllUsers(),
             ]);
             setChats(myChats);
-            
+
             const chattedUserIds = new Set(
-                myChats.flatMap(c => [c.userOne.userId, c.userTwo.userId])
+                myChats.flatMap((c) => [c.userOne.userId, c.userTwo.userId])
             );
-            setUsers(allUsers.filter((u) => u.userId !== user?.id && !chattedUserIds.has(u.userId)));
+            setUsers(
+                allUsers.filter((u) => u.userId !== user?.id && !chattedUserIds.has(u.userId))
+            );
         } catch (error) {
             console.error("Failed to load chats", error);
         }
