@@ -1,6 +1,6 @@
 import { axiosInstance } from "./axios.config";
 
-// Request types
+// --- Request Types ---
 export interface RegisterRequest {
     fullName: string;
     email: string;
@@ -13,11 +13,18 @@ export interface LoginRequest {
     password: string;
 }
 
-// Response types
+export interface GoogleLoginRequest {
+    token: string;
+}
+
+// --- Response Types ---
 export interface UserInfo {
     id: string;
     email: string;
     jobTitle: string | null;
+    // Quan trọng: dùng để kiểm tra xem user đã xem hướng dẫn chưa
+    isTutorialCompleted: boolean; 
+    // Các trường tùy chọn (giữ lại từ bản cũ để tương thích nếu cần)
     languageCode?: string;
     themeMode?: string;
 }
@@ -37,10 +44,7 @@ export interface RegisterResponse {
     data: null;
 }
 
-export interface GoogleLoginRequest {
-    token: string;
-}
-
+// --- Service Class ---
 class AuthService {
     async register(data: RegisterRequest): Promise<RegisterResponse> {
         return axiosInstance.post("/auth/register", data);

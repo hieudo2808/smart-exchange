@@ -8,6 +8,7 @@ interface User {
     id: string;
     email: string;
     jobTitle: string | null;
+    isTutorialCompleted: boolean;
 }
 
 export type AppLanguage = "vi" | "jp";
