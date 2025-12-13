@@ -157,7 +157,7 @@ export class UsersService {
                 email: payload.email,
                 password: hashedPassword,
                 fullName: payload.fullName,
-                languageCode: "ja",
+                languageCode: "jp",
                 themeMode: "light",
             },
         });
