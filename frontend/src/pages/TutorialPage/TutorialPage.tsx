@@ -41,8 +41,13 @@ const TutorialPage: React.FC = () => {
       // 1. Gọi API báo cho server biết user đã học xong (để lần sau không hiện lại)
       const updatedUser = await userService.completeTutorial();
       
-      // 2. Cập nhật user context
-      setUser(updatedUser as any);
+      // 2. Cập nhật user context - map từ UserProfile sang User interface
+      setUser({
+        id: updatedUser.id,
+        email: updatedUser.email,
+        jobTitle: updatedUser.jobTitle,
+        isTutorialCompleted: updatedUser.isTutorialCompleted,
+      });
       
       // 3. QUAN TRỌNG: Chuyển hướng sang trang Chat thay vì trang chủ
       navigate('/chat', { replace: true }); 

@@ -61,6 +61,15 @@ class AuthService {
     async logout(): Promise<{ message: string }> {
         return axiosInstance.post("/auth/logout");
     }
+
+    /**
+     * Refresh access token
+     * LƯU Ý: Backend cần được cấu hình để đọc refresh_token từ cookie (req.cookies.refresh_token)
+     * thay vì từ body, vì httpOnly cookie không thể đọc từ JavaScript
+     */
+    async refreshToken(): Promise<{ message: string }> {
+        return axiosInstance.post("/auth/refresh", {});
+    }
 }
 
 export const authService = new AuthService();

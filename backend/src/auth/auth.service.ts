@@ -117,32 +117,20 @@ export class AuthService {
 
     async loginWithGoogle(googleLoginDto: GoogleLoginDto) {
         try {
-            const response = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
-                headers: {
-                    Authorization: `Bearer ${googleLoginDto.token}`,
-                },
+            // Sử dụng ID Token thay vì Access Token
+            const ticket = await this.googleClient.verifyIdToken({
+                idToken: googleLoginDto.token,
+                audience: this.configService.get<string>("GOOGLE_CLIENT_ID"),
             });
 
-            if (!response.ok) {
-                throw new AppException(
-                    ExceptionCode.UNAUTHORIZED,
-                    "Failed to fetch user info from Google"
-                );
-            }
-
-            const googleUser = (await response.json()) as {
-                email?: string;
-                name?: string;
-                sub?: string;
-            };
-
-            if (!googleUser.email) {
-                throw new AppException(ExceptionCode.UNAUTHORIZED, "Google token is invalid");
+            const payload = ticket.getPayload();
+            if (!payload || !payload.email) {
+                throw new AppException(ExceptionCode.UNAUTHORIZED, "Invalid Google ID token");
             }
 
             const user = await this.usersService.upsertGoogleUser({
-                email: googleUser.email,
-                fullName: googleUser.name || googleUser.email.split("@")[0],
+                email: payload.email,
+                fullName: payload.name || payload.email.split("@")[0],
             });
 
             const token = this.jwtService.sign(

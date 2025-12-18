@@ -106,6 +106,9 @@ function App() {
                                         <Route path="help" element={<HelpSettings />} />
                                         <Route path="logout" element={<LogoutSettings />} />
                                     </Route>
+
+                                    {/* Catch-all route - redirect to home if route not found */}
+                                    <Route path="*" element={<Navigate to="/" replace />} />
                                 </Route>
                             </Routes>
                         </SocketProvider>

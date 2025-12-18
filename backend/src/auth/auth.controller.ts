@@ -1,5 +1,5 @@
-import { Body, Controller, Post, UseGuards, Res } from "@nestjs/common";
-import { Response } from "express";
+import { Body, Controller, Post, UseGuards, Res, Req } from "@nestjs/common";
+import { Request, Response } from "express";
 import { AuthService } from "./auth.service";
 import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "./dto/login.dto";
@@ -7,6 +7,8 @@ import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { GoogleLoginDto } from "./dto/google-login.dto";
 import { RefreshTokenDto } from "./dto/refresh-token.dto";
 import { setAuthCookie } from "~/common/helpers/cookie.helper";
+import { AppException } from "../common/exceptions/app.exception";
+import { ExceptionCode } from "../common/constants/exception-code.constant";
 
 @Controller("auth")
 export class AuthController {
@@ -34,8 +36,18 @@ export class AuthController {
     @Post("logout")
     @UseGuards(JwtAuthGuard)
     logout(@Res({ passthrough: true }) res: Response) {
-        res.clearCookie("access_token");
-        res.clearCookie("refresh_token");
+        res.clearCookie("access_token", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            path: "/",
+        });
+        res.clearCookie("refresh_token", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            path: "/",
+        });
 
         return this.authService.logout();
     }
@@ -57,10 +69,16 @@ export class AuthController {
         };
     }
 
-    // Refresh access token endpoint
+    // Refresh access token endpoint - đọc refresh_token từ cookie
     @Post("refresh")
-    refresh(@Body() refreshTokenDto: RefreshTokenDto, @Res({ passthrough: true }) res: Response) {
-        const result = this.authService.refreshAccessToken(refreshTokenDto);
+    refresh(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+        const refreshToken = req.cookies?.refresh_token;
+        
+        if (!refreshToken) {
+            throw new AppException(ExceptionCode.UNAUTHORIZED, "Refresh token not found in cookie");
+        }
+
+        const result = this.authService.refreshAccessToken({ refreshToken });
 
         const jwtExpiration = parseInt(process.env.JWT_EXPIRATION || "3600", 10);
 

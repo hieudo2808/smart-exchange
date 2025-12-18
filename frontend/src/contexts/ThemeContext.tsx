@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext } from 'react';
+import { useAuth } from './AuthContext';
 
 type Theme = 'light' | 'dark';
 
@@ -11,32 +12,27 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // 1. Lấy theme từ LocalStorage, mặc định là 'light'
-  const [theme, setThemeState] = useState<Theme>(() => {
-    const savedTheme = localStorage.getItem('theme');
-    return (savedTheme as Theme) || 'light';
-  });
+  // Sử dụng AuthContext làm nguồn dữ liệu chính cho theme
+  // AuthContext đã tự động set data-theme attribute trong applyVisualSettings
+  const { settings, updateSettings } = useAuth();
+  const theme = settings.theme;
 
-  // 2. Cập nhật DOM và LocalStorage mỗi khi theme thay đổi
-  useEffect(() => {
-    const root = window.document.documentElement;
-    
-    // Xóa class cũ
-    root.classList.remove('light', 'dark');
-    // Thêm class mới
-    root.classList.add(theme);
-    
-    // Lưu vào storage
-    localStorage.setItem('theme', theme);
-  }, [theme]);
-
-  const toggleTheme = () => {
-    setThemeState((prev) => (prev === 'light' ? 'dark' : 'light'));
+  const toggleTheme = async () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    try {
+      await updateSettings({ theme: newTheme });
+    } catch (error) {
+      console.error('Failed to toggle theme:', error);
+    }
   };
 
-  const setTheme = (newTheme: Theme) => {
-    setThemeState(newTheme);
-  }
+  const setTheme = async (newTheme: Theme) => {
+    try {
+      await updateSettings({ theme: newTheme });
+    } catch (error) {
+      console.error('Failed to set theme:', error);
+    }
+  };
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
