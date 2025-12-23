@@ -10,6 +10,7 @@ import {
     Request,
 } from "@nestjs/common";
 import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
+import { OwnershipGuard } from "../common/guards/ownership.guard";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { UpdateJobInfoDto } from "./dto/update-job-info.dto";
@@ -50,17 +51,19 @@ export class UsersController {
         return this.usersService.findOne(id);
     }
 
+    @UseGuards(JwtAuthGuard, OwnershipGuard)
     @Patch(":id")
     update(@Param("id") id: string, @Body() updateUserDto: UpdateUserDto) {
         return this.usersService.update(id, updateUserDto);
     }
 
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard, OwnershipGuard)
     @Patch(":id/job-info")
     updateJobInfo(@Param("id") id: string, @Body() updateJobInfoDto: UpdateJobInfoDto) {
         return this.usersService.updateJobInfo(id, updateJobInfoDto);
     }
 
+    @UseGuards(JwtAuthGuard, OwnershipGuard)
     @Delete(":id")
     remove(@Param("id") id: string) {
         return this.usersService.remove(id);

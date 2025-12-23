@@ -13,6 +13,7 @@ import { ChatService } from "./chat.service";
 import { ExceptionCode } from "../common/constants/exception-code.constant";
 import { AppException } from "../common/exceptions/app.exception";
 import { SendMessageDto } from "./dto/send-message.dto";
+import * as cookie from "cookie";
 
 @WebSocketGateway({
     cors: {
@@ -107,9 +108,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         return messageResponse;
     }
 
-    private extractToken(client: Socket) {
+    private extractToken(client: Socket): string | null {
         const authHeader = client.handshake.headers.authorization;
-        if (authHeader && authHeader.startsWith("Bearer ")) {
+        if (authHeader && typeof authHeader === "string" && authHeader.startsWith("Bearer ")) {
             return authHeader.slice(7);
         }
 
@@ -119,14 +120,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         }
 
         const cookieHeader = client.handshake.headers.cookie;
-        if (!cookieHeader) return null;
+        if (!cookieHeader || typeof cookieHeader !== "string") {
+            return null;
+        }
 
-        const cookies = cookieHeader.split(";").reduce<Record<string, string>>((acc, current) => {
-            const [key, ...rest] = current.trim().split("=");
-            acc[key] = rest.join("=");
-            return acc;
-        }, {});
-
-        return cookies["access_token"] || null;
+        const parsed = cookie.parse(cookieHeader);
+        return parsed["access_token"] || null;
     }
 }

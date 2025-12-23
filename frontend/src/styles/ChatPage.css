@@ -4,7 +4,7 @@
     flex-direction: column;
     height: 100vh;
     width: 100%;
-    background: #ffffff;
+    background: var(--bg-color);
     font-family: "Inter", sans-serif;
 }
 
@@ -15,22 +15,22 @@
     justify-content: space-between;
     padding: 14px 28px;
     height: 56px;
-    border-bottom: 1px solid #ddd;
-    background: #ffffff;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    box-shadow: 0 1px 2px var(--shadow-sm);
 }
 
 .logo {
     font-size: 20px;
     font-weight: 700;
-    color: #222;
+    color: var(--text-color);
 }
 
 .title {
     font-size: 18px;
     font-weight: 600;
     letter-spacing: 1px;
-    color: #444;
+    color: var(--text-color);
 }
 
 /* ======= BODY ======= */
@@ -45,14 +45,14 @@
 .chat-sidebar {
     width: 240px;
     padding: 20px;
-    border-right: 1px solid #ddd;
-    background: #ffffff;
+    border-right: 1px solid var(--border-color);
+    background: var(--sidebar-bg);
     overflow-y: auto;
 }
 
 .back-link {
     font-size: 14px;
-    color: #007bff;
+    color: var(--link-color);
     text-decoration: none;
     margin-bottom: 14px;
     display: inline-block;
@@ -60,13 +60,14 @@
 
 .back-link:hover {
     text-decoration: underline;
+    color: var(--link-hover);
 }
 
 .history-title {
     margin-top: 10px;
     font-size: 15px;
     font-weight: 600;
-    color: #444;
+    color: var(--text-color);
 }
 
 .history-list {
@@ -79,15 +80,17 @@
     margin-bottom: 4px;
     cursor: pointer;
     transition: background 0.15s ease;
+    color: var(--text-color);
 }
 
 .history-item:hover {
-    background-color: #f1f1f1;
+    background-color: var(--bg-tertiary);
 }
 
 .history-item.selected {
-    background-color: #e5eaf4;
+    background-color: var(--primary-light);
     font-weight: 600;
+    color: var(--primary-color);
 }
 
 /* ======= CHAT AREA WRAPPER ======= */
@@ -96,7 +99,7 @@
     width: 100%;
     display: flex;
     flex-direction: column;
-    background: #fafafa;
+    background: var(--bg-color);
     height: 100%;
     overflow: hidden;
 }
@@ -107,7 +110,7 @@
     width: 100%;
     padding: 20px;
     overflow-y: auto;
-    background: #ffffff;
+    background: var(--bg-color);
     padding-bottom: 40px;
 }
 
@@ -160,17 +163,19 @@
 }
 
 .bubble-row.left .bubble {
-    background: #e5e7eb;
+    background: var(--bg-tertiary);
+    color: var(--text-color);
 }
 
 .bubble-row.right .bubble {
-    background: #d2ecff;
+    background: var(--primary-color);
+    color: var(--text-inverse);
 }
 
 /* ======= TIMESTAMP ======= */
 .timestamp {
     font-size: 12px;
-    color: #888;
+    color: var(--text-muted);
     margin-top: 4px;
     text-align: right;
 }
@@ -179,8 +184,8 @@
 .input-container {
     display: flex;
     padding: 14px 20px;
-    border-top: 1px solid #ddd;
-    background: #ffffff;
+    border-top: 1px solid var(--border-color);
+    background: var(--bg-secondary);
     gap: 14px;
 }
 
@@ -188,7 +193,9 @@
     flex: 1;
     padding: 12px;
     border-radius: 6px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    color: var(--text-color);
     min-height: 40px;
     max-height: 150px;
     overflow-y: auto;
@@ -196,17 +203,22 @@
     white-space: pre-wrap;
 }
 
+.editor:focus {
+    border-color: var(--input-focus);
+    box-shadow: 0 0 0 2px var(--primary-light);
+}
+
 .editor:empty:before {
     content: "メッセージを入力してください。";
-    color: #aaa;
+    color: var(--input-placeholder);
     pointer-events: none;
 }
 
 .send-button {
     padding: 12px 20px;
     border: none;
-    background: #1677ff;
-    color: white;
+    background: var(--primary-color);
+    color: var(--text-inverse);
     border-radius: 6px;
     cursor: pointer;
     transition: 0.15s ease;
@@ -214,7 +226,7 @@
 }
 
 .send-button:hover {
-    background: #0b5ed7;
+    background: var(--primary-hover);
 }
 
 .msg-list {

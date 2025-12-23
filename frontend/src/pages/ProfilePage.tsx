@@ -5,6 +5,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { userService } from "~/services/api";
 import LanguageSwitcher from "../components/LanguageSwitcher";
 import "../styles/ProfilePage.css";
+import { useTheme } from "~/contexts/ThemeContext";
 
 interface ProfileFormData {
     email: string;
@@ -13,6 +14,7 @@ interface ProfileFormData {
 }
 
 const ProfilePage: React.FC = () => {
+    const { theme } = useTheme();
     const { t } = useTranslation();
     const navigate = useNavigate();
     const { user } = useAuth();

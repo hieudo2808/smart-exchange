@@ -103,6 +103,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                     id: currentUser.userId,
                     email: currentUser.email,
                     jobTitle: currentUser.jobTitle,
+                    isTutorialCompleted: currentUser.isTutorialCompleted ?? false,
                 });
 
                 applySettings({
@@ -137,6 +138,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 id: currentUser.userId,
                 email: currentUser.email,
                 jobTitle: currentUser.jobTitle,
+                isTutorialCompleted: currentUser.isTutorialCompleted ?? user.isTutorialCompleted,
             });
         } catch (error) {
             console.error("Failed to refresh settings from server:", error);
@@ -145,23 +147,30 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const updateSettings = async (partial: Partial<SettingsState>) => {
         const next = { ...settings, ...partial };
+        // Áp dụng settings ngay lập tức để UI phản hồi nhanh
         applySettings(next);
 
+        // Nếu không có user, chỉ lưu local
         if (!user) return;
 
+        // Cố gắng sync với backend nhưng không throw error nếu fail
+        // Vì settings đã được apply local rồi
         try {
             const updatedUser = await userService.updateUser(user.id, {
                 language: next.language,
                 themeMode: next.theme,
             });
 
+            // Nếu backend trả về thành công, cập nhật lại từ server
             applySettings({
                 language: normalizeLanguage(updatedUser.languageCode) || next.language,
                 theme: normalizeTheme(updatedUser.themeMode) || next.theme,
             });
         } catch (error) {
-            console.error("Failed to update settings:", error);
-            throw error as Error;
+            // Log warning nhưng không throw error
+            // Settings đã được apply local, app vẫn hoạt động bình thường
+            console.warn("Failed to sync settings with server (using local settings):", error);
+            // Không throw error để UI không bị block
         }
     };
 

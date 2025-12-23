@@ -1,18 +1,10 @@
 /* TutorialPage.css */
 
-:root {
-  --primary-blue: #2563EB;
-  --bg-light: #F8FAFC;
-  --text-dark: #1E293B;
-  --text-gray: #64748B;
-  --border-color: #e2e8f0;
-}
-
 .tutorial-page {
   min-height: 100vh;
-  background-color: #ffffff;
+  background-color: var(--bg-color);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: var(--text-dark);
+  color: var(--text-color);
 }
 
 /* 1. HEADER */
@@ -22,40 +14,46 @@
   align-items: center;
   padding: 15px 40px;
   border-bottom: 1px solid var(--border-color);
-  background: white;
+  background: var(--bg-secondary);
   position: sticky;
   top: 0;
   z-index: 100;
+  box-shadow: 0 1px 2px var(--shadow-sm);
 }
 
 .app-name {
   font-size: 20px;
   font-weight: 800;
-  color: var(--primary-blue);
+  color: var(--primary-color);
 }
 
 /* 2. TOP BANNER */
 .top-banner {
-  background-color: #EFF6FF; /* Xanh rất nhạt */
+  background-color: var(--primary-light);
   padding: 20px;
   text-align: center;
-  border-bottom: 1px solid #DBEAFE;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .info-btn {
-  background-color: #3B82F6;
-  color: white;
+  background-color: var(--primary-color);
+  color: var(--text-inverse);
   border: none;
   padding: 8px 25px;
   border-radius: 5px;
   font-weight: 500;
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px var(--shadow-sm);
   transition: background 0.2s;
 }
 
-.info-btn:hover {
-  background-color: #2563EB;
+.info-btn:hover:not(:disabled) {
+  background-color: var(--primary-hover);
+}
+
+.info-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .tutorial-main {
@@ -70,7 +68,7 @@
   font-size: 28px;
   font-weight: bold;
   margin: 50px 0;
-  color: var(--text-dark);
+  color: var(--text-color);
   text-transform: uppercase;
 }
 
@@ -98,8 +96,8 @@
 
 .step-badge {
   display: inline-block;
-  background-color: var(--primary-blue);
-  color: white;
+  background-color: var(--primary-color);
+  color: var(--text-inverse);
   padding: 6px 16px;
   border-radius: 20px;
   font-weight: bold;
@@ -112,18 +110,18 @@
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 15px;
-  color: #0F172A;
+  color: var(--text-color);
 }
 
 .feature-desc {
-  color: var(--text-gray);
+  color: var(--text-secondary);
   line-height: 1.6;
   font-size: 16px;
   margin-bottom: 15px;
 }
 
 .placeholder-text {
-  color: #cbd5e1; /* Màu xám mờ */
+  color: var(--text-muted);
   font-size: 12px;
   line-height: 1.4;
   user-select: none;
@@ -132,14 +130,14 @@
 /* Khung ảnh minh họa */
 .feature-image-box {
   flex: 1; /* Chiếm 1 phần */
-  background-color: #F1F5F9; /* Màu nền xám nhạt của box ảnh */
+  background-color: var(--bg-tertiary);
   height: 280px;
   border-radius: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border: 2px dashed #cbd5e1; /* Viền nét đứt giả lập placeholder */
+  border: 2px dashed var(--border-color);
 }
 
 .feature-icon {
@@ -149,7 +147,7 @@
 
 .img-caption {
   font-size: 13px;
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 /* 4. BOTTOM CTA BOX */
@@ -160,32 +158,32 @@
 }
 
 .bottom-cta-box {
-  background-color: #EFF6FF; /* Nền xanh nhạt giống ảnh mẫu */
-  border: 1px solid #DBEAFE;
+  background-color: var(--primary-light);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 40px 60px;
   text-align: center;
   width: 100%;
   max-width: 800px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 6px var(--shadow-sm);
 }
 
 .cta-title {
   font-size: 20px;
   font-weight: bold;
   margin-bottom: 10px;
-  color: var(--text-dark);
+  color: var(--text-color);
 }
 
 .cta-desc {
-  color: var(--text-gray);
+  color: var(--text-secondary);
   font-size: 15px;
   margin-bottom: 30px;
 }
 
 .start-btn {
-  background-color: var(--primary-blue);
-  color: white;
+  background-color: var(--primary-color);
+  color: var(--text-inverse);
   border: none;
   padding: 14px 50px;
   border-radius: 6px;
@@ -193,16 +191,16 @@
   font-weight: bold;
   cursor: pointer;
   transition: background 0.3s, transform 0.1s;
-  box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 4px 6px var(--shadow-md);
 }
 
-.start-btn:hover {
-  background-color: #1d4ed8;
+.start-btn:hover:not(:disabled) {
+  background-color: var(--primary-hover);
   transform: translateY(-2px);
 }
 
 .start-btn:disabled {
-  background-color: #93c5fd;
+  opacity: 0.6;
   cursor: not-allowed;
   transform: none;
 }
@@ -210,7 +208,7 @@
 .note-text {
   margin-top: 20px;
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 /* RESPONSIVE */
