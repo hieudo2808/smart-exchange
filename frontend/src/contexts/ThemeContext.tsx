@@ -14,17 +14,18 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   // 1. Lấy theme từ LocalStorage, mặc định là 'light'
   const [theme, setThemeState] = useState<Theme>(() => {
     const savedTheme = localStorage.getItem('theme');
-    return (savedTheme as Theme) || 'light';
+    return (savedTheme === 'dark' || savedTheme === 'light') ? savedTheme : 'light';
   });
 
   // 2. Cập nhật DOM và LocalStorage mỗi khi theme thay đổi
   useEffect(() => {
-    const root = window.document.documentElement;
+    const root = window.document.documentElement; // Lấy thẻ <html>
     
-    // Xóa class cũ
-    root.classList.remove('light', 'dark');
-    // Thêm class mới
-    root.classList.add(theme);
+    // --- PHẦN SỬA ĐỔI ---
+    // Thay vì dùng classList (root.classList.add), ta dùng setAttribute
+    // để khớp với CSS :root[data-theme="dark"]
+    root.setAttribute('data-theme', theme);
+    // --------------------
     
     // Lưu vào storage
     localStorage.setItem('theme', theme);

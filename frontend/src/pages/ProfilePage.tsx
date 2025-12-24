@@ -27,18 +27,26 @@ const ProfilePage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
 
-    useEffect(() => {
+
+   const loadUserData = async () => {
         if (user) {
-            // Parse jobTitle to extract career and position
-            // Format: "career:::position"
-            const [career, position] = (user.jobTitle || "").split(":::").map((s) => s.trim());
-            setFormData({
-                email: user.email,
-                career: career || "",
-                position: position || "",
-            });
+            try {
+                const userData = await userService.getCurrentUser();
+                const [career, position] = (userData.jobTitle || "").split(":::").map(s => s.trim());
+                setFormData({
+                    email: userData.email,
+                    career: career || "",
+                    position: position || "",
+                });
+            } catch (err) {
+                console.error("Failed to load user data:", err);
+            }
         }
-    }, [user]);
+    };
+
+    useEffect(() => {
+        loadUserData();
+    }, [user?.id]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;

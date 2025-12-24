@@ -35,26 +35,37 @@ const TutorialPage: React.FC = () => {
 
   // Hàm xử lý khi bấm nút "Bắt đầu chat" hoặc nút "Đã hiểu"
   const handleComplete = async () => {
-    try {
-      setIsLoading(true);
-      
-      // 1. Gọi API báo cho server biết user đã học xong (để lần sau không hiện lại)
-      const updatedUser = await userService.completeTutorial();
-      
-      // 2. Cập nhật user context
-      setUser(updatedUser as any);
-      
-      // 3. QUAN TRỌNG: Chuyển hướng sang trang Chat thay vì trang chủ
-      navigate('/chat', { replace: true }); 
+    try {
+      setIsLoading(true);
+      
+      // 1. Gọi API cập nhật DB
+      const apiResponse = await userService.completeTutorial();
 
-    } catch (error) {
-      console.error("Lỗi khi hoàn thành tutorial:", error);
-      // Nếu lỗi API, vẫn cho sang chat tạm thời (tùy bạn chọn logic này hay không)
-      // navigate('/chat'); 
-    } finally {
-      setIsLoading(false);
-    }
-  };
+      
+      // 2. Lấy dữ liệu user hiện tại đang lưu trong LocalStorage (để không bị mất id, jobTitle...)
+      const storedUserStr = localStorage.getItem('user');
+      const currentUser = storedUserStr ? JSON.parse(storedUserStr) : {};
+
+      // 3. GỘP DỮ LIỆU: Giữ cái cũ + Cập nhật cái mới
+      const mergedUser = {
+          ...currentUser,           // Giữ lại id, role, jobTitle cũ...
+          ...apiResponse,           // Ghi đè các trường mới từ API (nếu có)
+          isTutorialCompleted: true // Đảm bảo chắc chắn field này là true
+      };
+
+      // 4. Cập nhật Context và LocalStorage với dữ liệu đã gộp
+      setUser(mergedUser);
+      localStorage.setItem('user', JSON.stringify(mergedUser));
+      
+      // 5. Chuyển trang
+      navigate('/', { replace: true }); 
+
+    } catch (error) {
+      console.error("Lỗi khi hoàn thành tutorial:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="tutorial-page">

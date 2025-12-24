@@ -81,7 +81,7 @@ export default function ChatSideBar({ onSelectChat, selectedChatId, onRefreshRef
     return (
         <div className="chat-sidebar">
             <a href="/" className="back-link">
-                ← Trang chủ
+                ← Trang chủ2
             </a>
 
             <div className="history-title">Đã chat gần đây</div>
