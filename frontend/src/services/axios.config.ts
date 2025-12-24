@@ -9,7 +9,6 @@ export const axiosInstance = axios.create({
     headers: {
         "Content-Type": "application/json",
     },
-    timeout: 5000,
 });
 
 axiosInstance.interceptors.request.use(
@@ -73,11 +72,14 @@ axiosInstance.interceptors.response.use(
                 processQueue(refreshError as Error, null);
                 localStorage.removeItem("user");
                 localStorage.removeItem("settings");
-                
-                if (window.location.pathname !== "/login" && window.location.pathname !== "/register") {
+
+                if (
+                    window.location.pathname !== "/login" &&
+                    window.location.pathname !== "/register"
+                ) {
                     window.location.href = "/login";
                 }
-                
+
                 return Promise.reject(refreshError);
             } finally {
                 isRefreshing = false;
