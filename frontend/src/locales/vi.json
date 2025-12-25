@@ -47,8 +47,15 @@
         "settingsBackButton": "Quay lại cài đặt",
         "successMessage": "Cập nhật hồ sơ thành công!",
         "errorNotAuthenticated": "Bạn chưa đăng nhập.",
-        "errorUpdateFailed": "Cập nhật hồ sơ thất bại."
-    },
+        "errorUpdateFailed": "Cập nhật hồ sơ thất bại.",
+        "avatarLabel": "Avatar",
+        "avatarAlt": "Ảnh đại diện",
+        "avatarEmpty": "Chưa có",
+        "avatarUrlPlaceholder": "Dán URL ảnh hoặc chọn file",
+        "errorAvatarInvalid": "Chỉ chấp nhận file hình ảnh.",
+        "errorAvatarReadFailed": "Không đọc được file ảnh."
+},
+
     "lang": {
         "ariaVi": "Chuyển sang tiếng Việt",
         "ariaJp": "Chuyển sang tiếng Nhật"

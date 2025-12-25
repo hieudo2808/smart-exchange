@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import i18n from "../i18n";
 import { authService, userService } from "../services/api";
 
+/* ================= TYPES ================= */
+
 interface User {
     id: string;
     email: string;
@@ -24,11 +26,16 @@ interface AuthContextType {
     settings: SettingsState;
     loading: boolean;
     setUser: (user: User | null) => void;
+
+    // 👇 BẮT BUỘC GIỮ – LoginPage ĐANG DÙNG
     applySettings: (settings: SettingsState) => void;
+
     updateSettings: (partial: Partial<SettingsState>) => Promise<void>;
     refreshSettingsFromServer: () => Promise<void>;
     logout: () => Promise<void>;
 }
+
+/* ================= CONSTANTS ================= */
 
 const DEFAULT_SETTINGS: SettingsState = {
     language: "vi",
@@ -43,12 +50,15 @@ const normalizeLanguage = (lang?: string): AppLanguage =>
 const normalizeTheme = (theme?: string): AppTheme =>
     theme === "light" || theme === "dark" ? theme : DEFAULT_SETTINGS.theme;
 
+/* ================= PROVIDER ================= */
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
     const [settings, setSettings] = useState<SettingsState>(DEFAULT_SETTINGS);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
+    /* ===== APPLY SETTINGS (CORE) ===== */
     const applyVisualSettings = (next: SettingsState) => {
         i18n.changeLanguage(next.language);
         document.documentElement.setAttribute("data-theme", next.theme);
@@ -61,44 +71,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         localStorage.setItem("settings", JSON.stringify(merged));
     };
 
+    /* ===== LOAD LOCAL SETTINGS (KHÔNG ĐỤNG AUTH) ===== */
     useEffect(() => {
         const saved = localStorage.getItem("settings");
         if (saved) {
             try {
-                const parsed = JSON.parse(saved) as Partial<SettingsState>;
-                applySettings({ ...DEFAULT_SETTINGS, ...parsed });
-            } catch (error) {
-                console.warn("Failed to parse saved settings:", error);
+                applySettings(JSON.parse(saved));
+            } catch {
                 applySettings(DEFAULT_SETTINGS);
             }
         } else {
             applySettings(DEFAULT_SETTINGS);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    /* ===== VERIFY SESSION (KHÔNG GÂY TRẮNG TRANG) ===== */
     useEffect(() => {
         const verifySession = async () => {
-            const storedUser = localStorage.getItem("user");
-            if (!storedUser) {
-                setLoading(false);
-                return;
-            }
-
-            let cachedSettings = DEFAULT_SETTINGS;
-            const saved = localStorage.getItem("settings");
-            if (saved) {
-                try {
-                    cachedSettings = {
-                        ...DEFAULT_SETTINGS,
-                        ...(JSON.parse(saved) as SettingsState),
-                    };
-                } catch (error) {
-                    console.warn("Failed to parse cached settings during verify:", error);
-                }
-            }
-
             try {
                 const currentUser = await userService.getCurrentUser();
+
                 setUser({
                     id: currentUser.userId,
                     email: currentUser.email,
@@ -107,17 +100,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 });
 
                 applySettings({
-                    language:
-                        normalizeLanguage(currentUser.languageCode) || cachedSettings.language,
-                    theme: normalizeTheme(currentUser.themeMode) || cachedSettings.theme,
+                    language: normalizeLanguage(currentUser.languageCode),
+                    theme: normalizeTheme(currentUser.themeMode),
                 });
-            } catch (error) {
-                console.error("AuthContext - verification failed:", error);
-                localStorage.removeItem("user");
-                localStorage.removeItem("settings");
+            } catch {
+                // ❗ CHƯA LOGIN / TOKEN HẾT HẠN
                 setUser(null);
                 applySettings(DEFAULT_SETTINGS);
             } finally {
+                // 🔥 DÒNG QUAN TRỌNG NHẤT – KHÔNG CÓ LÀ TRẮNG
                 setLoading(false);
             }
         };
@@ -126,65 +117,49 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const refreshSettingsFromServer = async () => {
-        if (!user) return;
-        try {
-            const currentUser = await userService.getCurrentUser();
-            applySettings({
-                language: normalizeLanguage(currentUser.languageCode) || settings.language,
-                theme: normalizeTheme(currentUser.themeMode) || settings.theme,
-            });
-            setUser({
-                id: currentUser.userId,
-                email: currentUser.email,
-                jobTitle: currentUser.jobTitle,
-                isTutorialCompleted: currentUser.isTutorialCompleted ?? user.isTutorialCompleted,
-            });
-        } catch (error) {
-            console.error("Failed to refresh settings from server:", error);
-        }
-    };
-
+    /* ===== UPDATE SETTINGS ===== */
     const updateSettings = async (partial: Partial<SettingsState>) => {
         const next = { ...settings, ...partial };
-        // Áp dụng settings ngay lập tức để UI phản hồi nhanh
         applySettings(next);
 
-        // Nếu không có user, chỉ lưu local
         if (!user) return;
 
-        // Cố gắng sync với backend nhưng không throw error nếu fail
-        // Vì settings đã được apply local rồi
         try {
             const updatedUser = await userService.updateUser(user.id, {
                 language: next.language,
                 themeMode: next.theme,
             });
 
-            // Nếu backend trả về thành công, cập nhật lại từ server
             applySettings({
-                language: normalizeLanguage(updatedUser.languageCode) || next.language,
-                theme: normalizeTheme(updatedUser.themeMode) || next.theme,
+                language: normalizeLanguage(updatedUser.languageCode),
+                theme: normalizeTheme(updatedUser.themeMode),
             });
-        } catch (error) {
-            // Log warning nhưng không throw error
-            // Settings đã được apply local, app vẫn hoạt động bình thường
-            console.warn("Failed to sync settings with server (using local settings):", error);
-            // Không throw error để UI không bị block
+        } catch {
+            // dùng local, không crash
         }
     };
 
+    /* ===== REFRESH SETTINGS ===== */
+    const refreshSettingsFromServer = async () => {
+        if (!user) return;
+        try {
+            const currentUser = await userService.getCurrentUser();
+            applySettings({
+                language: normalizeLanguage(currentUser.languageCode),
+                theme: normalizeTheme(currentUser.themeMode),
+            });
+        } catch {}
+    };
+
+    /* ===== LOGOUT ===== */
     const logout = async () => {
         try {
             await authService.logout();
-        } catch (error) {
-            console.warn("Backend logout failed, continuing with client-side logout:", error);
-        }
+        } catch {}
 
         setUser(null);
         applySettings(DEFAULT_SETTINGS);
-        localStorage.removeItem("user");
-        localStorage.removeItem("settings");
+        localStorage.clear();
         navigate("/login");
     };
 
@@ -195,7 +170,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 settings,
                 loading,
                 setUser,
-                applySettings,
+                applySettings, // ✅ LOGIN / LANGUAGE SWITCHER DÙNG
                 updateSettings,
                 refreshSettingsFromServer,
                 logout,
@@ -205,6 +180,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         </AuthContext.Provider>
     );
 };
+
+/* ================= HOOK ================= */
 
 export const useAuth = () => {
     const context = useContext(AuthContext);

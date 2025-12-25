@@ -47,8 +47,15 @@
         "settingsBackButton": "設定画面に戻る",
         "successMessage": "プロフィールの更新に成功しました！",
         "errorNotAuthenticated": "ログインしていません。",
-        "errorUpdateFailed": "プロフィールの更新に失敗しました。"
-    },
+        "errorUpdateFailed": "プロフィールの更新に失敗しました。",
+        "avatarLabel": "アバター",
+        "avatarAlt": "アバター",
+        "avatarEmpty": "未設定",
+        "avatarUrlPlaceholder": "画像URLを貼り付ける、またはファイルを選択",
+        "errorAvatarInvalid": "画像ファイルのみ対応しています。",
+        "errorAvatarReadFailed": "画像の読み込みに失敗しました。"
+},
+
     "lang": {
         "ariaVi": "ベトナム語に切り替える",
         "ariaJp": "日本語に切り替える"

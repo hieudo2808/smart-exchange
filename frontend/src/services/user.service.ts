@@ -43,14 +43,9 @@ class UserService {
         return axiosInstance.delete(`/users/${userId}`);
     }
 
-    async getProfile(): Promise<UserProfile> {
-        return axiosInstance.get("/users/profile");
-    }
+    // NOTE: Backend hiện không có GET /users/profile, dùng getCurrentUser() (/users/me) thay thế.
 
-  // Cập nhật thông tin User
-    async updateProfile(data: Partial<UserProfile>): Promise<UserProfile> {
-        return axiosInstance.patch("/users/profile", data);
-    }
+    // NOTE: Backend hiện không có PATCH /users/profile. Nếu cần cập nhật user, dùng updateUser(userId, data) (PATCH /users/:id).
 
   // Đánh dấu đã hoàn thành Tutorial
     async completeTutorial(): Promise<UserProfile> {
