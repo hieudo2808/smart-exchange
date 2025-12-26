@@ -32,6 +32,7 @@ export default function ChatArea({ chatId, receiver, onChatCreated }: Props) {
     const messageInputRef = useRef<MessageInputRef>(null);
     const currentChatIdRef = useRef(chatId);
     const displayedMessageIds = useRef<Set<string>>(new Set());
+    const shouldScrollToBottom = useRef(false);
 
     // AI Check states
     const [isAILoading, setIsAILoading] = useState(false);
@@ -86,7 +87,8 @@ export default function ChatArea({ chatId, receiver, onChatCreated }: Props) {
             const isCurrentChat =
                 newMsg.chatId === currentChatIdRef.current ||
                 (newMsg.senderId === receiver.userId && !currentChatIdRef.current) ||
-                (newMsg.receiverId === receiver.userId && !currentChatIdRef.current);
+                (newMsg.receiverId === receiver.userId && !currentChatIdRef.current) ||
+                newMsg.senderId === receiver.userId;
 
             if (isCurrentChat) {
                 displayedMessageIds.current.add(newMsg.messageId);
@@ -101,24 +103,38 @@ export default function ChatArea({ chatId, receiver, onChatCreated }: Props) {
                     }),
                 };
                 setMessages((prev) => [...prev, formattedMsg]);
+                shouldScrollToBottom.current = true;
 
                 if (!currentChatIdRef.current && newMsg.chatId) {
                     currentChatIdRef.current = newMsg.chatId;
                     onChatCreated?.(newMsg.chatId);
+                    socket.emit("join_chat", { chatId: newMsg.chatId });
                 }
             }
         };
 
+        const handleMessageDeleted = (data: { messageId: string; chatId: string }) => {
+            if (data.chatId === currentChatIdRef.current) {
+                setMessages((prev) => prev.filter((m) => m.id !== data.messageId));
+                displayedMessageIds.current.delete(data.messageId);
+            }
+        };
+
         socket.on("message_received", handleNewMessage);
+        socket.on("new_message_notification", handleNewMessage);
+        socket.on("message_deleted", handleMessageDeleted);
 
         return () => {
             socket.off("message_received", handleNewMessage);
+            socket.off("new_message_notification", handleNewMessage);
+            socket.off("message_deleted", handleMessageDeleted);
         };
     }, [socket, user?.id, receiver.userId, onChatCreated]);
 
     useEffect(() => {
-        if (listRef.current) {
+        if (listRef.current && shouldScrollToBottom.current) {
             listRef.current.scrollTop = listRef.current.scrollHeight;
+            shouldScrollToBottom.current = false;
         }
     }, [messages]);
 
@@ -141,7 +157,13 @@ export default function ChatArea({ chatId, receiver, onChatCreated }: Props) {
         setIsAILoading(true);
 
         try {
-            const response = await aiService.checkCulture(text);
+            // Build context from recent messages
+            const context = messages.slice(-5).map((msg) => ({
+                sender: msg.sender,
+                text: msg.text,
+            }));
+
+            const response = await aiService.checkCulture(text, context);
             setAIResponse(response);
             setIsAIModalOpen(true);
         } catch (error) {
@@ -173,6 +195,11 @@ export default function ChatArea({ chatId, receiver, onChatCreated }: Props) {
         setPendingText("");
     };
 
+    const handleDeleteMessage = (messageId: string) => {
+        if (!socket) return;
+        socket.emit("delete_message", { messageId });
+    };
+
     return (
         <div className="chat-area-wrapper">
             <div
@@ -182,7 +209,7 @@ export default function ChatArea({ chatId, receiver, onChatCreated }: Props) {
                 Đang chat với: {receiver.fullName}
             </div>
             <div className="chat-area" ref={listRef}>
-                <MsgList messages={messages} />
+                <MsgList messages={messages} onDeleteMessage={handleDeleteMessage} />
             </div>
             <MessageInput ref={messageInputRef} onSend={handleSend} onAICheck={handleAICheck} />
 

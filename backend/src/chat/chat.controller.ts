@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query, UseGuards, Request } from "@nestjs/common";
+import { Controller, Get, Delete, Param, Query, UseGuards, Request } from "@nestjs/common";
 import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
 import { ChatService } from "./chat.service";
 
@@ -21,5 +21,11 @@ export class ChatController {
     @Get()
     async getUserChats(@Request() req: any) {
         return this.chatService.getUserChats(req.user.userId);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Delete("messages/:messageId")
+    async deleteMessage(@Param("messageId") messageId: string, @Request() req: any) {
+        return this.chatService.deleteMessage(messageId, req.user.userId);
     }
 }

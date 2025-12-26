@@ -39,6 +39,10 @@ class ChatService {
     async getAllUsers(): Promise<ChatUser[]> {
         return axiosInstance.get("/users");
     }
+
+    async deleteMessage(messageId: string): Promise<{ messageId: string; chatId: string }> {
+        return axiosInstance.delete(`/chats/messages/${messageId}`);
+    }
 }
 
 export const chatService = new ChatService();

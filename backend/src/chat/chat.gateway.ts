@@ -56,10 +56,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     @SubscribeMessage("join_chat")
-    handleJoinChat(
-        @ConnectedSocket() client: Socket,
-        @MessageBody() payload: { chatId: string }
-    ) {
+    handleJoinChat(@ConnectedSocket() client: Socket, @MessageBody() payload: { chatId: string }) {
         if (payload.chatId) {
             client.join(`chat-${payload.chatId}`);
         }
@@ -106,6 +103,26 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.server.to(`user-${receiverId}`).emit("new_message_notification", messageResponse);
 
         return messageResponse;
+    }
+
+    @SubscribeMessage("delete_message")
+    async handleDeleteMessage(
+        @ConnectedSocket() client: Socket,
+        @MessageBody() payload: { messageId: string }
+    ) {
+        const user = client.data.user;
+        if (!user) {
+            throw new AppException(ExceptionCode.UNAUTHORIZED, "User not authenticated");
+        }
+
+        const result = await this.chatService.deleteMessage(payload.messageId, user.userId);
+
+        this.server.to(`chat-${result.chatId}`).emit("message_deleted", {
+            messageId: result.messageId,
+            chatId: result.chatId,
+        });
+
+        return result;
     }
 
     private extractToken(client: Socket): string | null {

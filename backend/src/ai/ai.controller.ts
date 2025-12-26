@@ -10,6 +10,6 @@ export class AIController {
 
     @Post("check-culture")
     async checkCulture(@Body() dto: CheckCultureDto) {
-        return this.aiService.checkCulture(dto.text);
+        return this.aiService.checkCulture(dto.text, dto.context);
     }
 }

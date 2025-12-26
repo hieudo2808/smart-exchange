@@ -101,4 +101,27 @@ export class ChatService {
             orderBy: { updateAt: "desc" },
         });
     }
+
+    async deleteMessage(messageId: string, userId: string) {
+        const message = await this.prisma.message.findUnique({
+            where: { messageId },
+        });
+
+        if (!message) {
+            throw new AppException(ExceptionCode.NOT_FOUND, "Message not found");
+        }
+
+        if (message.senderId !== userId) {
+            throw new AppException(
+                ExceptionCode.FORBIDDEN,
+                "You can only delete your own messages"
+            );
+        }
+
+        await this.prisma.message.delete({
+            where: { messageId },
+        });
+
+        return { messageId, chatId: message.chatId };
+    }
 }
