@@ -1,10 +1,14 @@
 import { useState, useEffect, useRef } from "react";
 import MsgList from "./MsgList";
 import MessageInput from "./MessageInput";
+import type { MessageInputRef } from "./MessageInput";
+import AICultureCheckModal from "./AICultureCheckModal";
 import { useSocket } from "../../contexts/SocketContext";
 import { useAuth } from "../../contexts/AuthContext";
 import { chatService } from "../../services/chat.service";
+import { aiService } from "../../services/ai.service";
 import type { ChatUser } from "../../services/chat.service";
+import type { AICheckResponse } from "../../types/ai.types";
 import "../../styles/ChatPage.css";
 
 export interface DisplayMessage {
@@ -25,8 +29,15 @@ export default function ChatArea({ chatId, receiver, onChatCreated }: Props) {
     const { socket } = useSocket();
     const [messages, setMessages] = useState<DisplayMessage[]>([]);
     const listRef = useRef<HTMLDivElement>(null);
+    const messageInputRef = useRef<MessageInputRef>(null);
     const currentChatIdRef = useRef(chatId);
     const displayedMessageIds = useRef<Set<string>>(new Set());
+
+    // AI Check states
+    const [isAILoading, setIsAILoading] = useState(false);
+    const [isAIModalOpen, setIsAIModalOpen] = useState(false);
+    const [aiResponse, setAIResponse] = useState<AICheckResponse | null>(null);
+    const [pendingText, setPendingText] = useState("");
 
     useEffect(() => {
         currentChatIdRef.current = chatId;
@@ -56,7 +67,7 @@ export default function ChatArea({ chatId, receiver, onChatCreated }: Props) {
                         }),
                     }))
                     .reverse();
-                formatted.forEach(m => displayedMessageIds.current.add(m.id));
+                formatted.forEach((m) => displayedMessageIds.current.add(m.id));
                 setMessages(formatted);
             });
         } else {
@@ -79,7 +90,7 @@ export default function ChatArea({ chatId, receiver, onChatCreated }: Props) {
 
             if (isCurrentChat) {
                 displayedMessageIds.current.add(newMsg.messageId);
-                
+
                 const formattedMsg: DisplayMessage = {
                     id: newMsg.messageId,
                     sender: newMsg.senderId === user?.id ? "user" : "other",
@@ -119,6 +130,47 @@ export default function ChatArea({ chatId, receiver, onChatCreated }: Props) {
             receiverId: receiver.userId,
             content: text,
         });
+
+        // Clear input after sending
+        messageInputRef.current?.clearInput();
+        messageInputRef.current?.focusInput();
+    };
+
+    const handleAICheck = async (text: string) => {
+        setPendingText(text);
+        setIsAILoading(true);
+
+        try {
+            const response = await aiService.checkCulture(text);
+            setAIResponse(response);
+            setIsAIModalOpen(true);
+        } catch (error) {
+            console.error("AI check failed:", error);
+            handleSend(text);
+        } finally {
+            setIsAILoading(false);
+        }
+    };
+
+    const handleSendOriginal = () => {
+        handleSend(pendingText);
+        closeAIModal();
+    };
+
+    const handleSendSuggestion = (text: string) => {
+        handleSend(text);
+        closeAIModal();
+    };
+
+    const handleContinueEditing = () => {
+        closeAIModal();
+        messageInputRef.current?.focusInput();
+    };
+
+    const closeAIModal = () => {
+        setIsAIModalOpen(false);
+        setAIResponse(null);
+        setPendingText("");
     };
 
     return (
@@ -132,7 +184,18 @@ export default function ChatArea({ chatId, receiver, onChatCreated }: Props) {
             <div className="chat-area" ref={listRef}>
                 <MsgList messages={messages} />
             </div>
-            <MessageInput onSend={handleSend} />
+            <MessageInput ref={messageInputRef} onSend={handleSend} onAICheck={handleAICheck} />
+
+            {/* AI Culture Check Modal */}
+            <AICultureCheckModal
+                isOpen={isAIModalOpen}
+                isLoading={isAILoading}
+                response={aiResponse}
+                onClose={closeAIModal}
+                onSendOriginal={handleSendOriginal}
+                onSendSuggestion={handleSendSuggestion}
+                onContinueEditing={handleContinueEditing}
+            />
         </div>
     );
 }

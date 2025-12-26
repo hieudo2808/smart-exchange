@@ -37,13 +37,8 @@ import { PublicRoute } from "./components/PublicRoute";
 const HomeGuard = ({ children }: { children: React.ReactNode }) => {
     const { user, loading } = useAuth();
 
-    if (loading) {
-        return (
-            <div style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                Loading...
-            </div>
-        );
-    }
+    if (loading)
+        return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
 
     if (user && !user.isTutorialCompleted) {
         return <Navigate to="/tutorial" replace />;
@@ -56,13 +51,8 @@ const HomeGuard = ({ children }: { children: React.ReactNode }) => {
 const TutorialGuard = ({ children }: { children: React.ReactNode }) => {
     const { user, loading } = useAuth();
 
-    if (loading) {
-        return (
-            <div style={{ height: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                Loading...
-            </div>
-        );
-    }
+    if (loading)
+        return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
 
     if (user && user.isTutorialCompleted) {
         return <Navigate to="/home" replace />;

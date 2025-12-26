@@ -12,7 +12,7 @@ export const useSocket = () => {
     useEffect(() => {
         if (user && !socketRef.current) {
             socketRef.current = io(SOCKET_URL, {
-                withCredentials: true, // Để gửi cookie chứa token
+                withCredentials: true,
                 transports: ["websocket"],
             });
 

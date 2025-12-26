@@ -1,8 +1,10 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../contexts/AuthContext";
 
 const HomePage: React.FC = () => {
+    const { t } = useTranslation();
     const { user, settings, logout } = useAuth();
     const navigate = useNavigate();
     const [loading, setLoading] = React.useState(false);
@@ -32,38 +34,38 @@ const HomePage: React.FC = () => {
     return (
         <div style={{ padding: "2rem" }}>
             <header className="auth-header">
-                <div className="app-name">Smart Exchange</div>
+                <div className="app-name">{t('home.appName')}</div>
             </header>
 
-            <h1>Welcome to Smart Exchange</h1>
+            <h1>{t('home.title')}</h1>
 
             <div style={{ marginTop: "1rem" }}>
                 <p>
-                    <strong>Email:</strong> {user?.email}
+                    <strong>{t('home.userInfo.email')}:</strong> {user?.email}
                 </p>
                 <p>
-                    <strong>Job Title:</strong> {user?.jobTitle || "N/A"}
+                    <strong>{t('home.userInfo.jobTitle')}:</strong> {user?.jobTitle || t('home.userInfo.notAvailable')}
                 </p>
                 <p>
-                    <strong>Language:</strong> {settings?.language || "N/A"}
+                    <strong>{t('home.userInfo.language')}:</strong> {settings?.language || t('home.userInfo.notAvailable')}
                 </p>
                 <p>
-                    <strong>Theme:</strong> {settings?.theme || "N/A"}
+                    <strong>{t('home.userInfo.theme')}:</strong> {settings?.theme || t('home.userInfo.notAvailable')}
                 </p>
             </div>
 
             {/* Các nút hành động */}
             <div style={{ marginTop: "1.5rem", display: "flex", gap: "1rem" }}>
                 <button onClick={() => navigate("/profile")} style={primaryBtn}>
-                    Go to Profile
+                    {t('home.actions.goToProfile')}
                 </button>
 
                 <button onClick={() => navigate("/settings")} style={primaryBtn}>
-                    Go to Settings
+                    {t('home.actions.goToSettings')}
                 </button>
 
                 <button onClick={() => navigate("/chat")} style={secondaryBtn}>
-                    Go to Chat
+                    {t('home.actions.goToChat')}
                 </button>
             </div>
 
@@ -77,7 +79,7 @@ const HomePage: React.FC = () => {
                     opacity: loading ? 0.6 : 1,
                 }}
             >
-                {loading ? "Logging out..." : "Logout"}
+                {loading ? t('home.actions.loggingOut') : t('home.actions.logout')}
             </button>
         </div>
     );
