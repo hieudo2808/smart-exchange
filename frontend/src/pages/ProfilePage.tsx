@@ -91,28 +91,6 @@ const ProfilePage: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
 
-<<<<<<< HEAD
-
-   const loadUserData = async () => {
-        if (user) {
-            try {
-                const userData = await userService.getCurrentUser();
-                const [career, position] = (userData.jobTitle || "").split(":::").map(s => s.trim());
-                setFormData({
-                    email: userData.email,
-                    career: career || "",
-                    position: position || "",
-                });
-            } catch (err) {
-                console.error("Failed to load user data:", err);
-            }
-        }
-    };
-
-    useEffect(() => {
-        loadUserData();
-    }, [user?.id]);
-=======
     // ✅ KHÔNG gọi userService.getProfile() nữa (vì GET /users/profile đang 500)
     // Nếu cần lấy avatar hiện tại, thử lấy từ /users/me (thường ổn hơn)
     useEffect(() => {
@@ -134,7 +112,6 @@ const ProfilePage: React.FC = () => {
             avatar: savedAvatar || prev.avatar || "",
         }));
     }, [user]);const isDataUrl = useMemo(() => formData.avatar.startsWith("data:image/"), [formData.avatar]);
->>>>>>> 6ddeca12ca6ff86c3a713aad49487b5def2dfa63
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
