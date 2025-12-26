@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../contexts/AuthContext";
 import { useSocket } from "../../contexts/SocketContext";
 import { chatService } from "../../services/chat.service";
@@ -11,6 +12,7 @@ interface Props {
 }
 
 export default function ChatSideBar({ onSelectChat, selectedChatId, onRefreshRef }: Props) {
+    const { t } = useTranslation();
     const { user } = useAuth();
     const { socket } = useSocket();
     const [chats, setChats] = useState<ChatSession[]>([]);
@@ -83,10 +85,10 @@ export default function ChatSideBar({ onSelectChat, selectedChatId, onRefreshRef
     return (
         <div className="chat-sidebar">
             <a href="/" className="back-link">
-                ← Trang chủ
+                ← {t('chat.sidebar.backHome')}
             </a>
 
-            <div className="history-title">Đã chat gần đây</div>
+            <div className="history-title">{t('chat.sidebar.recentChats')}</div>
             <div className="history-list">
                 {chats.map((chat) => {
                     const partner = getPartner(chat);
@@ -100,7 +102,7 @@ export default function ChatSideBar({ onSelectChat, selectedChatId, onRefreshRef
                         >
                             <div style={{ fontWeight: "bold" }}>{partner.fullName}</div>
                             <div style={{ fontSize: "12px", color: "#666" }}>
-                                {chat.messages[0]?.content || "Chưa có tin nhắn"}
+                                {chat.messages[0]?.content || t('chat.sidebar.noMessages')}
                             </div>
                         </div>
                     );
@@ -108,7 +110,7 @@ export default function ChatSideBar({ onSelectChat, selectedChatId, onRefreshRef
             </div>
 
             <div className="history-title" style={{ marginTop: "20px" }}>
-                Người dùng khác
+                {t('chat.sidebar.otherUsers')}
             </div>
             <div className="history-list">
                 {users.map((u) => (

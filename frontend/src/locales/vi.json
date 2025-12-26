@@ -158,5 +158,93 @@
                 "desc": "Xem xét các gợi ý từ AI, lựa chọn câu trả lời phù hợp nhất với ngữ cảnh và gửi tin nhắn đi cho đối tác."
             }
         }
+    },
+    "home": {
+        "title": "Chào mừng đến với Smart Exchange",
+        "appName": "Smart Exchange",
+        "userInfo": {
+            "email": "Email",
+            "jobTitle": "Chức danh công việc",
+            "language": "Ngôn ngữ",
+            "theme": "Giao diện",
+            "notAvailable": "Chưa có thông tin"
+        },
+        "actions": {
+            "goToProfile": "Đi đến Hồ sơ",
+            "goToSettings": "Đi đến Cài đặt",
+            "goToChat": "Đi đến Chat",
+            "logout": "Đăng xuất",
+            "loggingOut": "Đang đăng xuất..."
+        }
+    },
+    "chat": {
+        "title": "Chat",
+        "header": {
+            "appName": "Smart Exchange"
+        },
+        "sidebar": {
+            "backHome": "Trang chủ",
+            "recentChats": "Đã chat gần đây",
+            "otherUsers": "Người dùng khác",
+            "noMessages": "Chưa có tin nhắn"
+        },
+        "placeholder": {
+            "selectChat": "Chọn một cuộc trò chuyện để bắt đầu"
+        },
+        "loading": "Đang tải chat...",
+        "input": {
+            "placeholder": "Nhập tin nhắn...",
+            "checkButton": "Kiểm tra đề xuất",
+            "sendButton": "Gửi"
+        },
+        "ai": {
+            "checking": "AI đang kiểm tra...",
+            "modalTitle": "Kiểm tra Văn hóa & Biểu đạt",
+            "originalText": "Văn bản đã nhập",
+            "culturalNotes": "Lưu ý văn hóa",
+            "suggestions": "Các đề xuất",
+            "sendOriginal": "Gửi bản gốc",
+            "sendSelected": "Gửi văn bản đã chọn",
+            "continueEditing": "Tiếp tục chỉnh sửa",
+            "checkFailed": "Kiểm tra AI thất bại",
+            "noSuggestions": "Không có đề xuất"
+        }
+    },
+    "common": {
+        "loading": "Đang tải...",
+        "processing": "Đang xử lý...",
+        "saving": "Đang lưu...",
+        "saved": "Đã lưu",
+        "success": "Thành công!",
+        "error": "Đã có lỗi xảy ra",
+        "confirm": "Xác nhận",
+        "cancel": "Hủy",
+        "close": "Đóng",
+        "save": "Lưu",
+        "edit": "Chỉnh sửa",
+        "delete": "Xóa",
+        "back": "Quay lại",
+        "next": "Tiếp theo",
+        "submit": "Gửi",
+        "yes": "Có",
+        "no": "Không",
+        "validation": {
+            "required": "Trường này là bắt buộc",
+            "invalidEmail": "Email không hợp lệ",
+            "passwordTooShort": "Mật khẩu quá ngắn",
+            "passwordMismatch": "Mật khẩu không khớp"
+        },
+        "messages": {
+            "updateSuccess": "Cập nhật thành công!",
+            "updateFailed": "Cập nhật thất bại",
+            "deleteSuccess": "Xóa thành công!",
+            "deleteFailed": "Xóa thất bại",
+            "saveSuccess": "Lưu thành công!",
+            "saveFailed": "Lưu thất bại",
+            "networkError": "Lỗi kết nối mạng",
+            "unauthorized": "Bạn không có quyền truy cập",
+            "notFound": "Không tìm thấy",
+            "serverError": "Lỗi máy chủ"
+        }
     }
 }

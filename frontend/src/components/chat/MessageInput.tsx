@@ -1,4 +1,5 @@
 import { useEffect, useRef, useImperativeHandle, forwardRef } from "react";
+import { useTranslation } from "react-i18next";
 
 interface Props {
     onSend: (text: string) => void;
@@ -12,6 +13,7 @@ export interface MessageInputRef {
 }
 
 const MessageInput = forwardRef<MessageInputRef, Props>(({ onSend, onAICheck }, ref) => {
+    const { t } = useTranslation();
     const editorRef = useRef<HTMLDivElement>(null);
 
     useImperativeHandle(ref, () => ({
@@ -64,7 +66,7 @@ const MessageInput = forwardRef<MessageInputRef, Props>(({ onSend, onAICheck }, 
             />
 
             <button className="send-button" onClick={handleAICheck}>
-                提案をチェック
+                {t('chat.input.checkButton')}
             </button>
         </div>
     );

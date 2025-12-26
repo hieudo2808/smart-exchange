@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { AICheckResponse, AISuggestion } from "../../types/ai.types";
 import "../../styles/AICultureCheckModal.css";
 
@@ -21,6 +22,7 @@ export default function AICultureCheckModal({
     onSendSuggestion,
     onContinueEditing,
 }: Props) {
+    const { t } = useTranslation();
     const [selectedSuggestion, setSelectedSuggestion] = useState<AISuggestion | null>(null);
 
     if (isLoading) {
@@ -28,7 +30,7 @@ export default function AICultureCheckModal({
             <div className="ai-loading-overlay">
                 <div className="ai-loading-content">
                     <div className="ai-loading-spinner"></div>
-                    <div className="ai-loading-text">AIがチェック中...</div>
+                    <div className="ai-loading-text">{t('chat.ai.checking')}</div>
                 </div>
             </div>
         );
@@ -65,7 +67,7 @@ export default function AICultureCheckModal({
                 <div className="ai-modal-header">
                     <div className="ai-modal-title">
                         <span className="icon">💡</span>
-                        <span>表現・文化チェック</span>
+                        <span>{t('chat.ai.modalTitle')}</span>
                     </div>
                     <button className="ai-modal-close" onClick={handleClose}>
                         ×
@@ -74,7 +76,7 @@ export default function AICultureCheckModal({
 
                 <div className="ai-modal-body">
                     <div className="ai-original-text-box">
-                        <span className="label">入力されたテキスト:</span>
+                        <span className="label">{t('chat.ai.originalText')}:</span>
                         <div className="text">「{response.originalText}」</div>
                     </div>
 
@@ -82,7 +84,7 @@ export default function AICultureCheckModal({
                         <div className="ai-cultural-notes-box">
                             <div className="label">
                                 <span>⚠</span>
-                                <span>文化的な注意</span>
+                                <span>{t('chat.ai.culturalNotes')}</span>
                             </div>
                             <div className="text">{response.culturalNotes}</div>
                         </div>
@@ -90,7 +92,7 @@ export default function AICultureCheckModal({
 
                     {response.suggestions && response.suggestions.length > 0 && (
                         <div className="ai-suggestions-section">
-                            <div className="ai-suggestions-title">提案された選択肢:</div>
+                            <div className="ai-suggestions-title">{t('chat.ai.suggestions')}:</div>
                             {response.suggestions.map((suggestion) => (
                                 <div
                                     key={suggestion.id}
@@ -113,15 +115,15 @@ export default function AICultureCheckModal({
 
                 <div className="ai-modal-footer">
                     <button className="ai-btn ai-btn-secondary" onClick={onSendOriginal}>
-                        元通り送信
+                        {t('chat.ai.sendOriginal')}
                     </button>
                     {selectedSuggestion ? (
                         <button className="ai-btn ai-btn-primary" onClick={handleSendSelected}>
-                            選択した文を送信
+                            {t('chat.ai.sendSelected')}
                         </button>
                     ) : (
                         <button className="ai-btn ai-btn-primary" onClick={handleContinueEditing}>
-                            修正を続ける
+                            {t('chat.ai.continueEditing')}
                         </button>
                     )}
                 </div>
