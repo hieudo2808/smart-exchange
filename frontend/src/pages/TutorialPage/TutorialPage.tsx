@@ -52,79 +52,7 @@ const TutorialPage: React.FC = () => {
       // 3. QUAN TRỌNG: Chuyển hướng sang trang Chat thay vì trang chủ
       navigate('/chat', { replace: true }); 
 
-    } catch (error) {
-      console.error("Lỗi khi hoàn thành tutorial:", error);
-      // Nếu lỗi API, vẫn cho sang chat tạm thời (tùy bạn chọn logic này hay không)
-      // navigate('/chat'); 
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  return (
-    <div className="tutorial-page">
-      {/* 1. HEADER */}
-      <header className="tutorial-header">
-        <div className="app-name">Smart EXchange</div>
-        <LanguageSwitcher /> 
-      </header>
-
-      {/* 2. TOP BANNER */}
-      <div className="top-banner">
-         {/* Đã thêm onClick={handleComplete} vào nút này để bấm là chuyển trang luôn */}
-         <button 
-            className="info-btn" 
-            onClick={handleComplete}
-            disabled={isLoading}
-         >
-            {t('tutorial.topBannerBtn')}
-         </button>
-      </div>
-
-      <main className="tutorial-main">
-        {/* TITLE */}
-        <h1 className="page-title">{t('tutorial.pageTitle')}</h1>
-
-        {/* 3. ZIGZAG CONTENT */}
-        <div className="steps-container">
-          {stepsConfig.map((item, index) => (
-            <div key={index} className={`feature-row ${index % 2 !== 0 ? 'reverse' : ''}`}>
-              <div className="feature-text">
-                <div className="step-badge">
-                    {t('tutorial.stepBadge')} {item.id}
-                </div>
-                <h3 className="feature-title">{t(item.titleKey)}</h3>
-                <p className="feature-desc">{t(item.descKey)}</p>
-                <p className="placeholder-text">
-                  xxxxxxxxxxxxxxxxxxxxxxxxxxx<br/>xxxxxxxxxxxxxxxxxxxxxxxxxxx
-                </p>
-              </div>
-              <div className="feature-image-box">
-                <div className="feature-icon">{item.icon}</div>
-                <p className="img-caption">Image Placeholder</p>
-              </div>
-            </div>
-          ))}
-        </div>
-
         {/* 4. BOTTOM CTA */}
-        <div className="bottom-cta-container">
-          <div className="bottom-cta-box">
-            <h3 className="cta-title">{t('tutorial.cta.title')}</h3>
-            <p className="cta-desc">{t('tutorial.cta.desc')}</p>
-            
-            {/* Nút này đã có sẵn hàm handleComplete */}
-            <button 
-              onClick={handleComplete}
-              className="start-btn"
-              disabled={isLoading}
-            >
-              {isLoading ? t('tutorial.cta.loading') : t('tutorial.cta.btn')}
-            </button>
-            
-            <p className="note-text">{t('tutorial.cta.note')}</p>
-          </div>
-        </div>
 
       </main>
     </div>
