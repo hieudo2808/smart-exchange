@@ -27,6 +27,8 @@ export interface UserInfo {
     // Các trường tùy chọn (giữ lại từ bản cũ để tương thích nếu cần)
     languageCode?: string;
     themeMode?: string;
+    avatar?: string;
+
 }
 
 export interface UserSettings {

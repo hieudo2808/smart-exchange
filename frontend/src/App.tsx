@@ -2,15 +2,16 @@ import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 
-// Imports Components & Pages
-import LoginPage from "./pages/LoginPage.tsx";
-import RegisterPage from "./pages/RegisterPage.tsx";
+/* ===== Pages ===== */
+import LandingPage from "./pages/landing/LandingPage";
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
 import HomePage from "./pages/HomePage";
 import ProfilePage from "./pages/ProfilePage";
 import ChatPage from "./pages/ChatPage";
 import TutorialPage from "./pages/TutorialPage/TutorialPage";
 
-// Imports Settings Pages
+/* ===== Settings ===== */
 import SettingsPage from "./pages/SettingsPage";
 import SettingsOverview from "./pages/settings/SettingsOverview";
 import LanguageSettings from "./pages/settings/LanguageSettings";
@@ -21,16 +22,18 @@ import SystemSettings from "./pages/settings/SystemSettings";
 import HelpSettings from "./pages/settings/HelpSettings";
 import LogoutSettings from "./pages/settings/LogoutSettings";
 
-// Imports Contexts & Layouts
+/* ===== Contexts & Layouts ===== */
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
+import { ThemeProvider } from "./contexts/ThemeContext";
 import { SocketProvider } from "./contexts/SocketContext";
+
 import { ProtectedLayout } from "./layouts/ProtectedLayout";
 import { PublicRoute } from "./components/PublicRoute";
-import { ThemeProvider } from "./contexts/ThemeContext";
 
-// --- 1. Guard cho trang Home ---
-// Nếu chưa xong Tutorial -> Đá sang /tutorial
+/* ===== Guards ===== */
+
+// Nếu user CHƯA hoàn thành tutorial → đá sang /tutorial
 const HomeGuard = ({ children }: { children: React.ReactNode }) => {
     const { user, loading } = useAuth();
 
@@ -44,8 +47,7 @@ const HomeGuard = ({ children }: { children: React.ReactNode }) => {
     return <>{children}</>;
 };
 
-// --- 2. Guard cho trang Tutorial ---
-// Nếu đã xong Tutorial -> Đá về Home (/)
+// Nếu user ĐÃ hoàn thành tutorial → không cho vào /tutorial nữa
 const TutorialGuard = ({ children }: { children: React.ReactNode }) => {
     const { user, loading } = useAuth();
 
@@ -53,7 +55,7 @@ const TutorialGuard = ({ children }: { children: React.ReactNode }) => {
         return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
 
     if (user && user.isTutorialCompleted) {
-        return <Navigate to="/" replace />;
+        return <Navigate to="/home" replace />;
     }
 
     return <>{children}</>;
@@ -70,17 +72,20 @@ function App() {
                         <LanguageProvider>
                             <SocketProvider>
                                 <Routes>
-                                    {/* --- Public Routes (Login/Register) --- */}
+
+                                    {/* ===== LANDING (ROOT – KHÔNG GUARD) ===== */}
+                                    <Route path="/" element={<LandingPage />} />
+
+                                    {/* ===== PUBLIC (LOGIN / REGISTER) ===== */}
                                     <Route element={<PublicRoute />}>
                                         <Route path="/login" element={<LoginPage />} />
                                         <Route path="/register" element={<RegisterPage />} />
                                     </Route>
 
-                                    {/* --- Protected Routes --- */}
+                                    {/* ===== PROTECTED ===== */}
                                     <Route element={<ProtectedLayout />}>
-                                        {/* 1. Home Page (Có Guard chặn nếu chưa học Tutorial) */}
                                         <Route
-                                            path="/"
+                                            path="/home"
                                             element={
                                                 <HomeGuard>
                                                     <HomePage />
@@ -88,7 +93,6 @@ function App() {
                                             }
                                         />
 
-                                        {/* 2. Tutorial Page (Có Guard chặn nếu đã học xong) */}
                                         <Route
                                             path="/tutorial"
                                             element={
@@ -98,28 +102,24 @@ function App() {
                                             }
                                         />
 
-                                        {/* 3. Các trang chức năng khác */}
-                                        <Route path="/profile" element={<ProfilePage />} />
                                         <Route path="/chat" element={<ChatPage />} />
+                                        <Route path="/profile" element={<ProfilePage />} />
 
-                                        {/* 4. Settings (Nested Routes) */}
                                         <Route path="/settings" element={<SettingsPage />}>
                                             <Route index element={<SettingsOverview />} />
                                             <Route path="language" element={<LanguageSettings />} />
                                             <Route path="theme" element={<ThemeSettings />} />
-                                            <Route
-                                                path="notifications"
-                                                element={<NotificationsSettings />}
-                                            />
+                                            <Route path="notifications" element={<NotificationsSettings />} />
                                             <Route path="security" element={<SecuritySettings />} />
                                             <Route path="system" element={<SystemSettings />} />
                                             <Route path="help" element={<HelpSettings />} />
                                             <Route path="logout" element={<LogoutSettings />} />
                                         </Route>
-
-                                        {/* Catch-all route - redirect to home if route not found */}
-                                        <Route path="*" element={<Navigate to="/" replace />} />
                                     </Route>
+
+                                    {/* ===== FALLBACK ===== */}
+                                    <Route path="*" element={<Navigate to="/" replace />} />
+
                                 </Routes>
                             </SocketProvider>
                         </LanguageProvider>

@@ -1,15 +1,16 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { GoogleLogin } from "@react-oauth/google";
+import { useGoogleLogin } from "@react-oauth/google";
 import AuthLayout from "../layouts/AuthLayout";
+import googleLogo from "../assets/google-logo.png";
 import TextInput from "../components/TextInput";
 import PrimaryButton from "../components/PrimaryButton";
 import { authService } from "~/services/api";
 import { useAuth } from "../contexts/AuthContext";
 
 const LoginPage: React.FC = () => {
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const { setUser, applySettings } = useAuth();
     const [email, setEmail] = useState("");
@@ -47,36 +48,34 @@ const LoginPage: React.FC = () => {
         }
     };
 
-    const handleGoogleSuccess = async (credentialResponse: { credential?: string }) => {
-        if (!credentialResponse.credential) {
+    const handleGoogleLogin = useGoogleLogin({
+        onSuccess: async (tokenResponse) => {
+            try {
+                setLoading(true);
+
+                // Gọi backend với access token
+                const result = await authService.loginWithGoogle({
+                    token: tokenResponse.access_token,
+                });
+
+                localStorage.setItem("user", JSON.stringify(result.user));
+                localStorage.setItem("settings", JSON.stringify(result.settings));
+
+                setUser(result.user);
+                navigate("/");
+            } catch (err) {
+                console.error("Google login error:", err);
+                const error = err as Error;
+                setError(error?.message || t("auth.login.googleError"));
+            } finally {
+                setLoading(false);
+            }
+        },
+        onError: () => {
             setError(t("auth.login.googleError"));
-            return;
-        }
-
-        try {
-            setLoading(true);
-
-            const result = await authService.loginWithGoogle({
-                token: credentialResponse.credential,
-            });
-
-            localStorage.setItem("user", JSON.stringify(result.user));
-            localStorage.setItem("settings", JSON.stringify(result.settings));
-
-            setUser(result.user);
-            navigate("/");
-        } catch (err) {
-            console.error("Google login error:", err);
-            const error = err as Error;
-            setError(error?.message || t("auth.login.googleError"));
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleGoogleError = () => {
-        setError(t("auth.login.googleError"));
-    };
+        },
+        flow: "implicit", // Dùng implicit flow thay vì popup để tránh COOP warning
+    });
 
     return (
         <AuthLayout title={t("auth.login.title")}>
@@ -104,16 +103,10 @@ const LoginPage: React.FC = () => {
                 </PrimaryButton>
             </form>
 
-            <div style={{ marginTop: "12px" }}>
-                <GoogleLogin
-                    key={i18n.language}
-                    onSuccess={handleGoogleSuccess}
-                    onError={handleGoogleError}
-                    text="signin_with"
-                    shape="rectangular"
-                    locale={i18n.language === "vi" ? "vi" : "ja"}
-                />
-            </div>
+            <button className="google-btn" onClick={() => handleGoogleLogin()} type="button">
+                <img src={googleLogo} alt={t("auth.googleAlt")} className="google-icon" />
+                <span>{t("auth.login.google")}</span>
+            </button>
 
             <div className="auth-bottom-text">
                 {t("auth.login.noAccount")}{" "}

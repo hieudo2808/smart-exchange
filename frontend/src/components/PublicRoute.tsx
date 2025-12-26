@@ -2,25 +2,11 @@ import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
 export const PublicRoute = () => {
-    const { user, loading } = useAuth();
+    const { user } = useAuth();
 
-    if (loading) {
-        return (
-            <div
-                style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    height: "100vh",
-                }}
-            >
-                Loading...
-            </div>
-        );
-    }
-
+    // CHỈ redirect khi ĐÃ login
     if (user) {
-        return <Navigate to="/" replace />;
+        return <Navigate to="/home" replace />;
     }
 
     return <Outlet />;
