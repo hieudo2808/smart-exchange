@@ -6,27 +6,19 @@ const ThemeSettings: React.FC = () => {
     const { t } = useTranslation();
     const { settings, updateSettings } = useAuth();
     const [saving, setSaving] = useState(false);
-    const [error, setError] = useState<string | null>(null);
 
     const handleChange = async (theme: "light" | "dark") => {
-        setError(null);
         setSaving(true);
-        try {
-            await updateSettings({ theme });
-        } catch (err) {
-            const e = err as Error;
-            setError(e.message || t("settings.common.error"));
-        } finally {
-            setSaving(false);
-        }
+        // updateSettings không throw error nữa, chỉ sync với backend
+        // Settings được apply ngay lập tức
+        await updateSettings({ theme });
+        setSaving(false);
     };
 
     return (
         <div className="settings-card">
             <h2 className="settings-card-title">{t("settings.theme.title")}</h2>
             <p className="settings-card-subtitle">{t("settings.theme.subtitle")}</p>
-
-            {error && <div className="settings-alert error">{error}</div>}
 
             <div className="settings-option">
                 <div className="theme-toggle-container">

@@ -1,16 +1,15 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useGoogleLogin } from "@react-oauth/google";
+import { GoogleLogin } from "@react-oauth/google";
 import AuthLayout from "../layouts/AuthLayout";
 import TextInput from "../components/TextInput";
 import PrimaryButton from "../components/PrimaryButton";
 import { authService } from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
-import googleLogo from "../assets/google-logo.png";
 
 const RegisterPage: React.FC = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const navigate = useNavigate();
     const { setUser } = useAuth();
 
@@ -44,7 +43,6 @@ const RegisterPage: React.FC = () => {
                 password,
             });
 
-            // Navigate to login page after successful registration
             navigate("/login");
         } catch (err: any) {
             setError(err?.message || t("auth.register.errorGeneric"));
@@ -53,34 +51,36 @@ const RegisterPage: React.FC = () => {
         }
     };
 
-    const handleGoogleLogin = useGoogleLogin({
-        onSuccess: async (tokenResponse) => {
-            try {
-                setLoading(true);
-
-                // Gọi backend với access token
-                const result = await authService.loginWithGoogle({
-                    token: tokenResponse.access_token,
-                });
-
-                localStorage.setItem("user", JSON.stringify(result.user));
-                localStorage.setItem("settings", JSON.stringify(result.settings));
-
-                setUser(result.user);
-                navigate("/");
-            } catch (err) {
-                console.error("Google login error:", err);
-                const error = err as Error;
-                setError(error?.message || t("auth.login.googleError"));
-            } finally {
-                setLoading(false);
-            }
-        },
-        onError: () => {
+    const handleGoogleSuccess = async (credentialResponse: { credential?: string }) => {
+        if (!credentialResponse.credential) {
             setError(t("auth.login.googleError"));
-        },
-        flow: "implicit",
-    });
+            return;
+        }
+
+        try {
+            setLoading(true);
+
+            const result = await authService.loginWithGoogle({
+                token: credentialResponse.credential,
+            });
+
+            localStorage.setItem("user", JSON.stringify(result.user));
+            localStorage.setItem("settings", JSON.stringify(result.settings));
+
+            setUser(result.user);
+            navigate("/");
+        } catch (err) {
+            console.error("Google login error:", err);
+            const error = err as Error;
+            setError(error?.message || t("auth.login.googleError"));
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleGoogleError = () => {
+        setError(t("auth.login.googleError"));
+    };
 
     return (
         <AuthLayout title={t("auth.register.title")}>
@@ -124,10 +124,16 @@ const RegisterPage: React.FC = () => {
                 </PrimaryButton>
             </form>
 
-            <button className="google-btn" onClick={() => handleGoogleLogin()} type="button">
-                <img src={googleLogo} alt={t("auth.googleAlt")} className="google-icon" />
-                <span>{t("auth.login.google")}</span>
-            </button>
+            <div style={{ marginTop: "12px" }}>
+                <GoogleLogin
+                    key={i18n.language}
+                    onSuccess={handleGoogleSuccess}
+                    onError={handleGoogleError}
+                    text="signup_with"
+                    shape="rectangular"
+                    locale={i18n.language === "vi" ? "vi" : "ja"}
+                />
+            </div>
 
             <div className="auth-bottom-text">
                 {t("auth.register.bottomText")}{" "}

@@ -9,15 +9,19 @@ import { LoginDto } from "./dto/login.dto";
 import { GoogleLoginDto } from "./dto/google-login.dto";
 import { RefreshTokenDto } from "./dto/refresh-token.dto";
 import { OAuth2Client } from "google-auth-library";
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class AuthService {
-    private readonly googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+    private googleClient: OAuth2Client;
 
     constructor(
         private readonly usersService: UsersService,
-        private readonly jwtService: JwtService
-    ) {}
+        private readonly jwtService: JwtService,
+        private readonly configService: ConfigService
+    ) {
+        this.googleClient = new OAuth2Client(this.configService.get<string>("GOOGLE_CLIENT_ID"));
+    }
 
     async register(registerDto: RegisterDto) {
         await this.usersService.create(registerDto);
@@ -56,7 +60,7 @@ export class AuthService {
                 email: userWithoutPassword.email,
                 jobTitle: userWithoutPassword.jobTitle,
                 // 👇 [QUAN TRỌNG] Thêm dòng này:
-                isTutorialCompleted: userWithoutPassword.isTutorialCompleted, 
+                isTutorialCompleted: userWithoutPassword.isTutorialCompleted,
             },
             settings: {
                 language: userWithoutPassword.languageCode,
@@ -113,32 +117,20 @@ export class AuthService {
 
     async loginWithGoogle(googleLoginDto: GoogleLoginDto) {
         try {
-            const response = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
-                headers: {
-                    Authorization: `Bearer ${googleLoginDto.token}`,
-                },
+            // Sử dụng ID Token thay vì Access Token
+            const ticket = await this.googleClient.verifyIdToken({
+                idToken: googleLoginDto.token,
+                audience: this.configService.get<string>("GOOGLE_CLIENT_ID"),
             });
 
-            if (!response.ok) {
-                throw new AppException(
-                    ExceptionCode.UNAUTHORIZED,
-                    "Failed to fetch user info from Google"
-                );
-            }
-
-            const googleUser = (await response.json()) as {
-                email?: string;
-                name?: string;
-                sub?: string;
-            };
-
-            if (!googleUser.email) {
-                throw new AppException(ExceptionCode.UNAUTHORIZED, "Google token is invalid");
+            const payload = ticket.getPayload();
+            if (!payload || !payload.email) {
+                throw new AppException(ExceptionCode.UNAUTHORIZED, "Invalid Google ID token");
             }
 
             const user = await this.usersService.upsertGoogleUser({
-                email: googleUser.email,
-                fullName: googleUser.name || googleUser.email.split("@")[0],
+                email: payload.email,
+                fullName: payload.name || payload.email.split("@")[0],
             });
 
             const token = this.jwtService.sign(
@@ -161,7 +153,6 @@ export class AuthService {
                     id: user.userId,
                     email: user.email,
                     jobTitle: user.jobTitle,
-                    // 👇 [QUAN TRỌNG] Thêm dòng này cho Google Login luôn:
                     isTutorialCompleted: user.isTutorialCompleted,
                 },
                 settings: {
@@ -170,6 +161,7 @@ export class AuthService {
                 },
             };
         } catch (error) {
+            console.error("Google Login Error:", error);
             if (error instanceof AppException) {
                 throw error;
             }

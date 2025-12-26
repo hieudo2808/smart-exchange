@@ -201,16 +201,23 @@ a {
 .lang-btn {
     border: 1px solid var(--border-color);
     background: var(--input-bg);
+    color: var(--text-color);
     padding: 6px 14px;
     border-radius: 999px;
     font-size: 12px;
     cursor: pointer;
+    transition: all 0.2s;
+}
+
+.lang-btn:hover {
+    border-color: var(--primary-color);
+    background: var(--primary-light);
 }
 
 .lang-btn.active {
     border-color: var(--primary-color);
     background: var(--primary-color);
-    color: #ffffff;
+    color: var(--text-inverse);
 }
 
 .google-btn {

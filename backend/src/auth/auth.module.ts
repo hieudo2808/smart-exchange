@@ -5,14 +5,21 @@ import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
 import { UsersModule } from "../users/users.module";
 import { JwtStrategy } from "../common/strategies/jwt.strategy";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 
 @Module({
     imports: [
         UsersModule,
         PassportModule,
-        JwtModule.register({
-            secret: process.env.JWT_SECRET || "SmartExchange2025_SecretKey_V1_Production",
-            signOptions: { expiresIn: Number(process.env.JWT_EXPIRATION) || 3600 },
+        JwtModule.registerAsync({
+            imports: [ConfigModule],
+            useFactory: async (configService: ConfigService) => ({
+                secret: configService.get<string>("JWT_SECRET"),
+                signOptions: {
+                    expiresIn: Number(configService.get<string>("JWT_EXPIRATION")) || 3600,
+                },
+            }),
+            inject: [ConfigService],
         }),
     ],
     controllers: [AuthController],
