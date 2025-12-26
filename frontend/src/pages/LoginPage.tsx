@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -126,3 +127,126 @@ const LoginPage: React.FC = () => {
 };
 
 export default LoginPage;
+=======
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { useGoogleLogin } from "@react-oauth/google";
+import AuthLayout from "../layouts/AuthLayout";
+import googleLogo from "../assets/google-logo.png";
+import TextInput from "../components/TextInput";
+import PrimaryButton from "../components/PrimaryButton";
+import { authService } from "~/services/api";
+import { useAuth } from "../contexts/AuthContext";
+
+const LoginPage: React.FC = () => {
+    const { t } = useTranslation();
+    const navigate = useNavigate();
+    const { setUser, applySettings } = useAuth();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(false);
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError(null);
+
+        if (!email || !password) {
+            setError(t("auth.login.errorMissing"));
+            return;
+        }
+
+        try {
+            setLoading(true);
+            const result = await authService.login({ email, password });
+
+            localStorage.setItem("user", JSON.stringify(result.user));
+            applySettings({
+                language: result.settings.language as "vi" | "jp",
+                theme: result.settings.theme as "light" | "dark",
+            });
+            setUser(result.user);
+            navigate("/");
+        } catch (err) {
+            console.error("Login error:", err);
+            const error = err as Error;
+            setError(error?.message || t("auth.login.errorLoginFailed"));
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleGoogleLogin = useGoogleLogin({
+        onSuccess: async (tokenResponse) => {
+            try {
+                setLoading(true);
+
+                // Gọi backend với access token
+                const result = await authService.loginWithGoogle({
+                    token: tokenResponse.access_token,
+                });
+
+                localStorage.setItem("user", JSON.stringify(result.user));
+                localStorage.setItem("settings", JSON.stringify(result.settings));
+
+                setUser(result.user);
+                navigate("/");
+            } catch (err) {
+                console.error("Google login error:", err);
+                const error = err as Error;
+                setError(error?.message || t("auth.login.googleError"));
+            } finally {
+                setLoading(false);
+            }
+        },
+        onError: () => {
+            setError(t("auth.login.googleError"));
+        },
+        flow: "implicit", // Dùng implicit flow thay vì popup để tránh COOP warning
+    });
+
+    return (
+        <AuthLayout title={t("auth.login.title")}>
+            {error && <div className="auth-error">{error}</div>}
+
+            <form onSubmit={handleSubmit} className="auth-form">
+                <TextInput
+                    label={t("auth.login.emailLabel")}
+                    type="email"
+                    placeholder={t("auth.login.emailPlaceholder")}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                />
+
+                <TextInput
+                    label={t("auth.login.passwordLabel")}
+                    type="password"
+                    placeholder={t("auth.login.passwordPlaceholder")}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                />
+
+                <PrimaryButton type="submit" disabled={loading}>
+                    {loading ? t("auth.login.loginProcessing") : t("auth.login.submit")}
+                </PrimaryButton>
+            </form>
+
+            <button className="google-btn" onClick={() => handleGoogleLogin()} type="button">
+                <img src={googleLogo} alt={t("auth.googleAlt")} className="google-icon" />
+                <span>{t("auth.login.google")}</span>
+            </button>
+
+            <div className="auth-bottom-text">
+                {t("auth.login.noAccount")}{" "}
+                <Link to="/register" className="link">
+                    {t("auth.login.register")}
+                </Link>
+            </div>
+        </AuthLayout>
+    );
+};
+
+export default LoginPage;
+>>>>>>> 6ddeca12ca6ff86c3a713aad49487b5def2dfa63
